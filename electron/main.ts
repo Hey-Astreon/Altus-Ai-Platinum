@@ -286,7 +286,10 @@ ipcMain.on('capture-screen', async () => {
 });
 
 ipcMain.on('get-settings-status', (event) => {
-  event.reply('settings-status', { hasKeys: settings.hasKeys() });
+  event.reply('settings-status', { 
+    hasKeys: settings.hasKeys(),
+    opacity: settings.getSetting('globalOpacity', 0.85)
+  });
 });
 
 ipcMain.on('save-settings', (event, { assembly, openrouter }) => {
@@ -301,6 +304,10 @@ ipcMain.on('export-session', async (event, { answers, transcript }) => {
 
 ipcMain.on('reset-calibration', () => {
   userSpeakerId = null;
+});
+
+ipcMain.on('set-opacity', (event, opacity: number) => {
+  settings.saveSetting('globalOpacity', opacity);
 });
 
 ipcMain.on('audio-chunk', (event, float32Data: Float32Array) => {

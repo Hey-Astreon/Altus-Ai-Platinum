@@ -36,6 +36,9 @@ contextBridge.exposeInMainWorld('auraApi', {
   // Platinum Features: Session Export
   exportSession: (data: { answers: any[], transcript: any[] }) => ipcRenderer.send('export-session', data),
 
+  // Obsidian UI: Opacity control
+  setOpacity: (opacity: number) => ipcRenderer.send('set-opacity', opacity),
+
   // AI Answer Engine
   setAiMode: (mode: 'Turbo' | 'Genius') => ipcRenderer.send('set-ai-mode', mode),
   setAiProvider: (provider: 'Cloud' | 'Local') => ipcRenderer.send('set-ai-provider', provider),

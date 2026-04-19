@@ -23,6 +23,7 @@ const App: React.FC = () => {
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [autoVision, setAutoVision] = useState(false);
   const [isCalibrated, setIsCalibrated] = useState(false);
+  const [appOpacity, setAppOpacity] = useState(0.85);
   const [isCapturingVision, setIsCapturingVision] = useState(false);
   
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -33,7 +34,7 @@ const App: React.FC = () => {
     const api = getApi();
 
     if (!api) {
-      console.warn('[Aura] Running in browser preview mode — Electron IPC not available.');
+      console.warn('[Altus AI] Running in browser preview mode — Electron IPC not available.');
       return;
     }
 
@@ -66,7 +67,10 @@ const App: React.FC = () => {
       }),
 
       api.onSettings(() => setShowSettings(true)),
-      api.onSettingsStatus((data: { hasKeys: boolean }) => setHasKeys(data.hasKeys)),
+      api.onSettingsStatus((data: { hasKeys: boolean, opacity: number }) => {
+        setHasKeys(data.hasKeys);
+        if (data.opacity) setAppOpacity(data.opacity);
+      }),
       api.onSettingsSaved(() => {
         setShowSettings(false);
         api.getSettingsStatus();
@@ -143,6 +147,12 @@ const App: React.FC = () => {
     getApi()?.saveSettings(tempKeys);
   };
 
+  const handleOpacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setAppOpacity(val);
+    getApi()?.setOpacity(val);
+  };
+
   const handleToggleCapture = async () => {
     if (isCapturing) {
       stopCapture();
@@ -207,7 +217,10 @@ const App: React.FC = () => {
   const hasContent = showSettings || transcript.length > 0 || answers.length > 0 || currentAnswer || isThinking || isCapturing || autoVision;
 
   return (
-    <div className={`app-wrapper ${isGhostMode ? 'ghost-mode' : ''}`}>
+    <div 
+      className={`app-wrapper ${isGhostMode ? 'ghost-mode' : ''}`}
+      style={{ '--app-opacity': appOpacity } as React.CSSProperties}
+    >
       {isCapturing && !isCalibrated && !isGhostMode && (
         <div className="calibration-toast">
           🎙️ Say "Hello" to calibrate your voice filter...
@@ -299,8 +312,22 @@ const App: React.FC = () => {
                 onChange={(e) => setTempKeys({...tempKeys, openrouter: e.target.value})}
               />
             </div>
+
+            <div className="input-group slider-group">
+              <label>Stealth Opacity ({Math.round(appOpacity * 100)}%)</label>
+              <input 
+                type="range" 
+                min="0.1" 
+                max="1.0" 
+                step="0.01" 
+                className="premium-slider"
+                value={appOpacity}
+                onChange={handleOpacityChange}
+              />
+            </div>
+
             <button className="save-btn" onClick={handleSaveSettings}>Save & Encrypt</button>
-            <p className="hint">Keys are encrypted using Windows SafeStorage.</p>
+            <p className="hint">Configuration is secured via AES-256 System Storage.</p>
           </div>
         )}
 

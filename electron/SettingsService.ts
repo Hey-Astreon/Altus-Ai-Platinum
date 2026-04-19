@@ -4,6 +4,7 @@ import Store from 'electron-store';
 interface AuraSettings {
   assemblyAiKey?: string;
   openRouterKey?: string;
+  globalOpacity?: number;
 }
 
 export class SettingsService {
@@ -40,5 +41,14 @@ export class SettingsService {
 
   public hasKeys(): boolean {
     return !!(this.getKey('assembly') && this.getKey('openrouter'));
+  }
+
+  // Generic settings (unencrypted)
+  public saveSetting(key: string, value: any) {
+    this.store.set(key, value);
+  }
+
+  public getSetting(key: string, defaultValue: any): any {
+    return this.store.get(key, defaultValue);
   }
 }
