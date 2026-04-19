@@ -36,50 +36,54 @@ const App: React.FC = () => {
     }
 
     // Listen for transcripts from main process
-    api.onTranscript((data: { text: string, isFinal: boolean }) => {
-      if (data.isFinal) {
-        setTranscript(prev => [...prev.slice(-10), data.text]);
-      }
-    });
+    const cleanups = [
+      api.onTranscript((data: { text: string, isFinal: boolean }) => {
+        if (data.isFinal) {
+          setTranscript(prev => [...prev.slice(-10), data.text]);
+        }
+      }),
 
-    // AI Engine listeners
-    api.onAiThinking(() => {
-      setIsThinking(true);
-      setCurrentAnswer('');
-    });
+      api.onAiThinking(() => {
+        setIsThinking(true);
+        setCurrentAnswer('');
+      }),
 
-    api.onAiAnswerChunk((chunk: string) => {
-      setIsThinking(false);
-      setCurrentAnswer(prev => prev + chunk);
-    });
+      api.onAiAnswerChunk((chunk: string) => {
+        setIsThinking(false);
+        setCurrentAnswer(prev => prev + chunk);
+      }),
 
-    api.onAiAnswerEnd((fullAnswer: string) => {
-      setAnswers(prev => [...prev, fullAnswer]);
-      setCurrentAnswer('');
-      setVisionContext(null); // Clear context once answer is finalized
-    });
+      api.onAiAnswerEnd((fullAnswer: string) => {
+        setAnswers(prev => [...prev, fullAnswer]);
+        setCurrentAnswer('');
+        setVisionContext(null);
+      }),
 
-    api.onVisionCaptured((base64: string) => {
-      setVisionContext(`data:image/png;base64,${base64}`);
-    });
+      api.onVisionCaptured((base64: string) => {
+        setVisionContext(`data:image/png;base64,${base64}`);
+      }),
 
-    // Settings listeners
-    api.onSettings(() => setShowSettings(true));
-    api.onSettingsStatus((data: { hasKeys: boolean }) => setHasKeys(data.hasKeys));
-    api.onSettingsSaved(() => {
-      setShowSettings(false);
-      api.getSettingsStatus();
-    });
+      api.onSettings(() => setShowSettings(true)),
+      api.onSettingsStatus((data: { hasKeys: boolean }) => setHasKeys(data.hasKeys)),
+      api.onSettingsSaved(() => {
+        setShowSettings(false);
+        api.getSettingsStatus();
+      }),
+
+      api.onInitCapture(() => {
+        handleToggleCapture();
+      }),
+
+      api.onGhostModeToggle(() => {
+        setIsGhostMode(prev => !prev);
+      })
+    ];
 
     api.getSettingsStatus();
 
-    api.onInitCapture(() => {
-      handleToggleCapture();
-    });
-
-    api.onGhostModeToggle(() => {
-      setIsGhostMode(prev => !prev);
-    });
+    return () => {
+      cleanups.forEach(fn => fn());
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -166,12 +170,8 @@ const App: React.FC = () => {
 
       processor.onaudioprocess = (e) => {
         const inputData = e.inputBuffer.getChannelData(0);
-        // Convert Float32 to Int16 PCM
-        const pcmData = new Int16Array(inputData.length);
-        for (let i = 0; i < inputData.length; i++) {
-          pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
-        }
-        getApi()?.sendAudioChunk(new Uint8Array(pcmData.buffer));
+        // Offload conversion math to the backend Node thread to prevent UI stutter
+        getApi()?.sendAudioChunk(inputData);
       };
 
       setIsCapturing(true);

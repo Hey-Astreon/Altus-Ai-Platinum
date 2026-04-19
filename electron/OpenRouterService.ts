@@ -35,6 +35,7 @@ export class OpenRouterService extends EventEmitter {
   private currentMode: ModelMode = 'Turbo';
   private currentPersona: InterviewPersona = 'Technical';
   private memoryManager: MemoryManager;
+  private abortController: AbortController | null = null;
 
   constructor(apiKey: string) {
     super();
@@ -48,6 +49,13 @@ export class OpenRouterService extends EventEmitter {
 
   public setPersona(persona: InterviewPersona) {
     this.currentPersona = persona;
+  }
+
+  public abort() {
+    if (this.abortController) {
+      this.abortController.abort();
+      this.abortController = null;
+    }
   }
 
   public async getAnswer(question: string, base64Image?: string) {
@@ -73,6 +81,9 @@ export class OpenRouterService extends EventEmitter {
     const messages = this.memoryManager.getContext(systemPrompt);
     messages.push({ role: 'user', content: userContent });
 
+    this.abort(); // Cancel any existing request
+    this.abortController = new AbortController();
+
     try {
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -87,6 +98,7 @@ export class OpenRouterService extends EventEmitter {
           messages: messages,
           stream: true,
         }),
+        signal: this.abortController.signal as any
       });
 
       if (!response.body) throw new Error('No response body');
@@ -94,10 +106,29 @@ export class OpenRouterService extends EventEmitter {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let fullText = '';
+      
+      // Safety timeout: if we don't get a chunk for 15 seconds, assume dead socket
+      let inactivityTimer = setTimeout(() => {
+        this.abort();
+        this.emit('answer-end', fullText + "\n\n**[STABILITY ALERT]** Connection lost. Response truncated.");
+      }, 15000);
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
+        
+        // Reset timer on every chunk received
+        clearTimeout(inactivityTimer);
+        if (!done) {
+          inactivityTimer = setTimeout(() => {
+            this.abort();
+            this.emit('answer-end', fullText + "\n\n**[STABILITY ALERT]** Connection lost mid-stream.");
+          }, 15000);
+        }
+
+        if (done) {
+          clearTimeout(inactivityTimer);
+          break;
+        }
 
         const chunk = decoder.decode(value, { stream: true });
         const lines = chunk.split('\n');

@@ -34,6 +34,7 @@ export class OllamaService extends EventEmitter {
   private currentMode: ModelMode = 'Turbo';
   private currentPersona: InterviewPersona = 'Technical';
   private memoryManager: MemoryManager;
+  private abortController: AbortController | null = null;
 
   constructor(openRouterKey: string) {
     super();
@@ -54,6 +55,13 @@ export class OllamaService extends EventEmitter {
     this.memoryManager.clear(); // Reset history when changing personas
   }
 
+  public abort() {
+    if (this.abortController) {
+      this.abortController.abort();
+      this.abortController = null;
+    }
+  }
+
   public async getAnswer(question: string, base64Image?: string) {
     const model = base64Image ? LOCAL_MODELS.Vision : LOCAL_MODELS[this.currentMode];
     const systemPrompt = SYSTEM_PROMPTS[this.currentPersona];
@@ -72,6 +80,9 @@ export class OllamaService extends EventEmitter {
     const messages = this.memoryManager.getContext(systemPrompt);
     messages.push(userMessage);
 
+    this.abort(); // Cancel any existing local request
+    this.abortController = new AbortController();
+
     try {
       const response = await axios.post(
         OLLAMA_URL,
@@ -84,12 +95,26 @@ export class OllamaService extends EventEmitter {
             num_ctx: 4096, // Ensure context window is large enough for transcripts
           }
         },
-        { responseType: 'stream' }
+        { 
+          responseType: 'stream',
+          signal: this.abortController.signal
+        }
       );
 
       let fullResponse = '';
+      
+      let inactivityTimer = setTimeout(() => {
+        this.abort();
+        this.emit('answer-end', fullResponse + "\n\n**[LOCAL STABILITY ALERT]** Ollama stalled.");
+      }, 15000);
 
       response.data.on('data', (chunk: Buffer) => {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+          this.abort();
+          this.emit('answer-end', fullResponse + "\n\n**[LOCAL STABILITY ALERT]** Ollama connection lost mid-stream.");
+        }, 15000);
+
         const lines = chunk.toString('utf8').split('\n').filter(line => line.trim() !== '');
         
         for (const line of lines) {
@@ -108,6 +133,7 @@ export class OllamaService extends EventEmitter {
       });
 
       response.data.on('end', () => {
+        clearTimeout(inactivityTimer);
         this.memoryManager.addInteraction(userMessage, fullResponse);
         this.emit('answer-end', fullResponse);
       });

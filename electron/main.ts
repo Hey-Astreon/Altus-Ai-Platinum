@@ -215,7 +215,8 @@ ipcMain.on('set-ai-provider', (event, provider: 'Cloud' | 'Local') => {
   currentProvider = provider;
   
   if (aiService) {
-    // Teardown old events
+    // Teardown old events and abort any active requests
+    aiService.abort?.(); 
     aiService.removeAllListeners('answer-chunk');
     aiService.removeAllListeners('answer-end');
     
@@ -283,8 +284,13 @@ ipcMain.on('save-settings', (event, { assembly, openrouter }) => {
   event.reply('settings-saved');
 });
 
-ipcMain.on('audio-chunk', (event, chunk: Buffer) => {
-  sttService?.sendAudio(chunk);
+ipcMain.on('audio-chunk', (event, float32Data: Float32Array) => {
+  // Convert Float32 to Int16 PCM here in Node to satisfy low-latency UI requirements
+  const pcmData = new Int16Array(float32Data.length);
+  for (let i = 0; i < float32Data.length; i++) {
+    pcmData[i] = Math.max(-1, Math.min(1, float32Data[i])) * 0x7FFF;
+  }
+  sttService?.sendAudio(Buffer.from(pcmData.buffer));
 });
 
 ipcMain.on('stop-audio-capture', () => {
