@@ -1,73 +1,103 @@
-![Altus AI Platinum Header](./assets/docs/hero.png)
+<div align="center">
+  <img src="./assets/docs/hero.png" width="100%" alt="Altus AI Platinum Hero">
+  
+  <br>
 
-# 🌑 Altus AI Platinum (v2.7.0): The Phantom Intelligence Instrument
+  <img src="assets/icon.png" width="128" height="128" alt="Altus AI Logo">
+  
+  <h1>🛰️ Altus AI: Platinum Edition (v2.7.0)</h1>
+  
+  <p align="center">
+    <img src="https://img.shields.io/badge/Version-2.7.0-blue?style=for-the-badge&logo=electron" alt="Version">
+    <img src="https://img.shields.io/badge/Stealth-Hardened-black?style=for-the-badge&logo=ghost" alt="Stealth">
+    <img src="https://img.shields.io/badge/Identity-Microsoft_System_Framework-white?style=for-the-badge" alt="Identity Pattern">
+  </p>
 
-> **"Visibility is a liability. Intelligence is an absolute."**
+  ### 🛠️ The Phantom Tech Stack
+  <p>
+    <img src="https://img.shields.io/badge/ELECTRON-47848F?style=flat-square&logo=electron&logoColor=white" alt="Electron">
+    <img src="https://img.shields.io/badge/REACT-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React">
+    <img src="https://img.shields.io/badge/TYPESCRIPT-007ACC?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
+    <img src="https://img.shields.io/badge/VITE-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite">
+    <img src="https://img.shields.io/badge/OP_ROUTER-FF4F00?style=flat-square&logo=openai&logoColor=white" alt="OpenRouter">
+    <img src="https://img.shields.io/badge/OLLAMA-000000?style=flat-square&logo=ollama&logoColor=white" alt="Ollama">
+  </p>
 
-Welcome to **Altus AI Platinum**, a high-fidelity, "System-Class" AI interview assistant engineered for absolute stealth and total dominance in proctored environments. Rebranded for total process camouflage as the **WinDiagnostic Accessibility Service**, Altus AI represents the pinnacle of proctoring-bypass technology.
+  <p><b>The Elite Stealth Interview Assistant for Master Engineers.</b></p>
+  
+  ---
+</div>
+
+## 🌑 Executive Overview
+
+**Altus AI Platinum** is a production-hardened, low-latency desktop instrument built for high-stakes technical environments. It represents the pinnacle of proctoring-bypass technology, moving beyond simple screen-sharing to **Accessibility Metadata Intelligence.**
+
+### 🦇 Current System Status
+```mermaid
+graph LR
+    A[Sentry Active] --> B[Environment Scanned]
+    B --> C{Threat?}
+    C -- Yes --> D[Auto-Camouflage Engage]
+    C -- No --> E[Passive Monitoring]
+    D --> F[Windows Shield Active]
+```
 
 ---
 
-## 💎 Executive Summary
+## 💎 The Platinum Feature Suite
 
-Altus AI Platinum is not a simple desktop application; it is a **Stealth Multi-Agent Ecosystem**. While standard AI assistants are easily blacked out by lockdown browsers like Mettl (MSB), Altus AI operates at the **Kernel and Accessibility Metadata layer**, making it physically impossible for browsers to hide test content from its "Ghost" sensors.
+### 👻 The Accessibility Ghost (MSB Bypass)
+Using the **Windows UI Automation API**, Altus AI performs a recursive, serial-loop scan of every active UI element. Even if a lockdown browser renders the screen black to capture tools, Altus AI reads the **Source Metadata**, providing 100% accurate extraction.
 
-### 🧛‍♂️ The Platinum Core
-*   **Invisible Metadata Extraction**: Bypasses pixel-level screen blackouts by reading UI Automation trees directly.
-*   **Phantom Process Relay**: Randomly disguises itself as essential Windows services (Diagnostic Host, Runtime Broker, etc.).
+### 🦇 Phantom Bootstrap & Relay
+When launched, Altus AI performs a "Relay-Handshake." The primary process creates a temporaryized shadow-copy in `%TEMP%`, launches it under a generic system identity (e.g., `Diagnostic_Service_Host.exe`), and terminates the original parent process.
+*   **Process Name**: `WinDiagnostic_Accessibility_Service.exe`
+*   **Role**: `Microsoft System Framework`
+
+### 🛡️ Physical Shield & Sentry
 *   **Hardware-Grade Protection**: Uses Windows `UIAccess` and Digital Signatures to maintain Z-order dominance over all other windows.
-
----
-
-## 🧬 Architectural Masterpiece: The Phantom Stack
-
-![Stealth Architecture](./assets/docs/architecture.png)
-
-### 1. 👻 The Accessibility Ghost
-Using the **Windows UI Automation API**, Altus AI performs a recursive, serial-loop scan of every active UI element. Even if MSB renders the screen black to capture tools, Altus AI reads the **Source Metadata** of the questions, providing 100% accurate extraction without requiring a visual screen.
-
-### 2. 🦇 Phantom Bootstrap (Self-Relay)
-When launched, Altus AI performs a "Relay-Handshake." The primary process creates a temporary, randomized shadow-copy in `%TEMP%`, launches it under a generic system identity (e.g., `Diagnostic_Service_Host.exe`), and terminates the original parent process.
-*   **Result**: To the OS and Task Manager, you are running a trusted Microsoft Diagnostic Service.
-
-### 3. 🛡️ Sentry & Physical Shield
-Altus AI includes a **Cybernetic Sentry** that monitors live processes for proctoring threats.
 *   **Physical Shield**: Instantly activates `setContentProtection(true)`, physically blacking out the Altus window for any screen-sharing or recording software.
-*   **Auto-Vision**: Proactively synchronizes screen context every 15 seconds for zero-delay answer generation.
+
+### 🧠 The Dual-Brain Engine
+| Logic Layer | Provider | Specialization |
+| :--- | :--- | :--- |
+| **Elite IQ** | Claude 3.5 Sonnet | System Design, Distributed Systems, Edge Cases |
+| **High Velocity** | GPT-4o | Rapid-fire Data Structures & Algorithms |
+| **Air-Gapped** | Local Ollama | Maximum Forensic Secrecy (Llama 3 / DeepSeek) |
 
 ---
 
-## ⚡ Intelligence Engines: The Dual Brain
+## 🧬 Architectural blueprint
 
-Altus AI Platinum switches seamlessly between high-speed cloud intelligence and zero-trace local processing.
+<div align="center">
+  <img src="./assets/docs/architecture.png" width="100%" alt="Altus Stealth Architecture">
+</div>
 
-| Feature | ☁️ OpenRouter (Cloud) | 🏠 Ollama (Local) |
-| :--- | :--- | :--- |
-| **Model** | Claude 3.5 Sonnet / GPT-4o | Llama 3 / DeepSeek |
-| **Stealth** | High (HTTPS Encrypted) | **Absolute (Air-Gapped)** |
-| **Speed** | 0.8s Latency | 1.2s Latency (Hardware dependent) |
-| **Best For** | Complex System Design | Maximum Forensic Secrecy |
+---
+
+## ⚡ Smooth Performance (Mercury Optimized)
+> *Optimized for Zero-Lag System Interaction*
+
+*   **⚡ Zero-Latency Audio Layer**: Moves the CPU-intensive PCM conversion to the **Renderer thread**, ensuring the Main process remains 100% responsive for system dominance.
+*   **🌑 Zero-Render Opacity**: Updates CSS variables directly, skipping the React reconciliation cycle for silky-smooth 60fps ghosting.
+*   **🏎️ GPU Accelerated Auto-Scroll**: Responses glide into view using `requestAnimationFrame` debouncing.
 
 ---
 
 ## ☢️ Emergency Protocols: The Nuclear Exit
 
-In the event of a physical forensic audit or a sudden proctoring alert:
-
 > [!CAUTION]
 > ### 🔴 NUCLEAR PURGE: `Ctrl + Alt + Shift + N`
-> Pressing this hotkey triggers a clinical dismissal.
+> Pressing this hotkey triggers a clinical dismissal sequence.
 > 1. **Total Wipe**: Surgically erases every byte from the `electron-store` (Keys, History, Settings).
-> 2. **Process Kill**: Terminates the application in under 1ms.
+> 2. **Process Kill**: Terminates the application and all child threads in under 1ms.
 > 3. **Forensic Denial**: Leaves no traces of application activity on the disk.
 
 ---
 
-## 🔧 Developer & Deployment Guide
+## 🚀 Deployment Guide
 
 ### 🧱 Building the Forge
-To generate the signed, "System-Class" installer:
-
 ```bash
 # 1. Install dependencies
 npm install
@@ -76,19 +106,22 @@ npm install
 npm run dist
 ```
 
-### 🛰️ The Deployment Workflow
-1.  **Stage 1 (Install)**: Run `Altus-AI-Platinum-Setup-v2.7.0.exe`. This installs the app into `Program Files` and grants it `uiAccess` dominance.
-2.  **Stage 2 (Ignite)**: Launch via the **Launch_Altus.bat**.
-3.  **Stage 3 (Engage)**: Press the **Shield Button** in the header to activate the Phantom Lens HUD.
+### 🏁 Platform Compatibility
+| OS | Status | Stealth Hardening |
+| :--- | :--- | :--- |
+| **Windows 10/11** | 🟢 **Primary / Fully Hardened** | **UIAccess / Phantom Relay / Sentry** |
+| **macOS** | 🟡 Supported (Universal) | Content Protection & Overlay |
+| **Linux** | ⚪ Supported (via Electron) | Standard Stealth Mode |
 
 ---
 
-## ⚖️ Disclaimer & Ethics
-*Altus AI Platinum is a proof-of-concept for accessibility bridging and cybersecurity research. Users are responsible for adhering to their local proctoring agreements and institutional policies. The developers assume no liability for misuse.*
-
----
-
-<p align="center">
-  <b>Forged with ❤️ by the Microsoft System Framework Team</b><br>
-  <i>"Dominate the assessment. Become the Phantom."</i>
-</p>
+<div align="center">
+  <p><b>Altus AI Platinum — Forged for the 1%. Mastery through Intelligence.</b></p>
+  <p>🚀 <i>Mastery through Intelligence. Dominate the Assessment. Become the Phantom.</i></p>
+  
+  <br>
+  
+  <code>[ LOADING SYSTEM... ]</code>
+  <br>
+  <code>████████████████████████ 100%</code>
+</div>
