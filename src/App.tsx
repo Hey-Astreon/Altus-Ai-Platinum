@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Cpu, Zap, Brain, MessageSquare, Settings, Eye, Trash2, Activity, Cloud, Server, ChevronRight, Mic, Keyboard, Layers } from 'lucide-react';
+import { Cpu, Zap, Brain, MessageSquare, Settings, Eye, Trash2, Activity, Cloud, Server, ChevronRight, Mic, Keyboard, Layers, Shield } from 'lucide-react';
 import { MODEL_REGISTRY } from './constants/models';
 
 // Safe accessor — returns undefined when running outside Electron
@@ -11,6 +11,7 @@ const App: React.FC = () => {
   const [transcript, setTranscript] = useState<string[]>([]);
   const [isCapturing, setIsCapturing] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [isCamouflaged, setIsCamouflaged] = useState<boolean>(false);
   const [visionContext, setVisionContext] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [hasKeys, setHasKeys] = useState(false);
@@ -120,12 +121,20 @@ const App: React.FC = () => {
     // Initial Opacity Sync (Avoid React render cycle)
     document.documentElement.style.setProperty('--app-opacity', appOpacity.toString());
 
+    getApi()?.onCamouflageStateChange((isActive: boolean) => {
+      setIsCamouflaged(isActive);
+    });
+
     return () => {
       cleanups.forEach(fn => fn());
       navigator.mediaDevices.removeEventListener('devicechange', loadAudioDevices);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // SENTRY PHYSICAL SYNC: Ensure the OS window protection matches the AI/User state
+    getApi()?.setCamouflage(isCamouflaged);
+  }, [isCamouflaged]);
 
   const loadAudioDevices = async () => {
     try {
@@ -294,8 +303,13 @@ const App: React.FC = () => {
 
       processor.onaudioprocess = (e) => {
         const inputData = e.inputBuffer.getChannelData(0);
-        // Offload conversion math to the backend Node thread to prevent UI stutter
-        getApi()?.sendAudioChunk(inputData);
+        // PLATINUM OPTIMIZATION: Perform PCM conversion in the Renderer thread
+        // to ensure the Main process remains zero-latency for system dominance.
+        const pcmData = new Int16Array(inputData.length);
+        for (let i = 0; i < inputData.length; i++) {
+          pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
+        }
+        getApi()?.sendAudioChunk(pcmData.buffer);
       };
 
       setIsCapturing(true);
@@ -324,6 +338,15 @@ const App: React.FC = () => {
       className={`app-wrapper ${isGhostMode ? 'ghost-mode' : ''} ${isFlaring ? 'flare-pulse' : ''}`}
       style={{ '--app-opacity': appOpacity } as React.CSSProperties}
     >
+      {(isCamouflaged || isGhostMode) && (
+        <div className="phantom-lens-hud">
+          <div className="hud-content">
+            <div className="hud-answer">
+              {currentAnswer || (answers.length > 0 ? answers[answers.length - 1] : 'Scanning test metadata...')}
+            </div>
+          </div>
+        </div>
+      )}
       {error && (
         <div className="error-banner">
           ⚠️ {error}
@@ -385,6 +408,13 @@ const App: React.FC = () => {
             title="Export Session (Markdown)"
           >
             <MessageSquare size={16} />
+          </button>
+          <button 
+            className={`control-btn ${isCamouflaged ? 'active danger' : ''}`} 
+            onClick={() => setIsCamouflaged(!isCamouflaged)}
+            title="Sentry: Engage Phantom Camouflage"
+          >
+            <Shield size={16} color={isCamouflaged ? '#ff4d4d' : 'white'} />
           </button>
           <button 
             className="control-btn" 
@@ -479,26 +509,37 @@ const App: React.FC = () => {
               </div>
 
               <div className="input-group">
-                <label><Keyboard size={12}/> Global Hotkeys</label>
-                <div className="hotkey-item">
-                  <span>Vision Capture</span>
-                  <button 
-                    className={`hotkey-btn ${isRecordingHotkey === 'visionCapture' ? 'recording' : ''}`}
-                    onClick={() => recordHotkey('visionCapture')}
-                  >
-                    {isRecordingHotkey === 'visionCapture' ? '...Press Keys' : hotkeys.visionCapture.replace('CommandOrControl+', 'Ctrl+')}
-                  </button>
-                </div>
-                <div className="hotkey-item">
-                  <span>Toggle Visibility</span>
-                  <button 
-                    className={`hotkey-btn ${isRecordingHotkey === 'toggleVisibility' ? 'recording' : ''}`}
-                    onClick={() => recordHotkey('toggleVisibility')}
-                  >
-                    {isRecordingHotkey === 'toggleVisibility' ? '...Press Keys' : (hotkeys.toggleVisibility || 'Ctrl+Shift+V').replace('CommandOrControl+', 'Ctrl+')}
-                  </button>
-                </div>
-              </div>
+                 <label>Hardware Hotkeys</label>
+                 <div className="model-dash-list">
+                    <div className="hotkey-item">
+                      <span>Quick Vision Scan</span>
+                      <button 
+                        className={`hotkey-btn ${isRecordingHotkey === 'visionCapture' ? 'recording' : ''}`}
+                        onClick={() => recordHotkey('visionCapture')}
+                      >
+                        {isRecordingHotkey === 'visionCapture' ? '...Press Keys' : (hotkeys.visionCapture || 'Ctrl+Shift+S').replace('CommandOrControl+', 'Ctrl+')}
+                      </button>
+                    </div>
+                    <div className="hotkey-item">
+                      <span>Toggle Visibility</span>
+                      <button 
+                        className={`hotkey-btn ${isRecordingHotkey === 'toggleVisibility' ? 'recording' : ''}`}
+                        onClick={() => recordHotkey('toggleVisibility')}
+                      >
+                        {isRecordingHotkey === 'toggleVisibility' ? '...Press Keys' : (hotkeys.toggleVisibility || 'Ctrl+Shift+V').replace('CommandOrControl+', 'Ctrl+')}
+                      </button>
+                    </div>
+                 </div>
+               </div>
+
+               <div className="input-group" style={{marginTop: '10px'}}>
+                 <label style={{color: '#ff4d4d'}}>⚠️ Emergency Protocol</label>
+                 <div className="hotkey-item" style={{borderColor: 'rgba(255, 77, 77, 0.3)', background: 'rgba(255, 77, 77, 0.05)'}}>
+                   <span style={{color: '#ff4d4d'}}>Nuclear Purge & Kill</span>
+                   <code style={{fontSize: '0.7rem', color: '#ff4d4d', fontWeight: 'bold'}}>Ctrl+Alt+Shift+N</code>
+                 </div>
+                 <p style={{fontSize: '0.65rem', opacity: 0.6, marginTop: '4px', fontStyle: 'italic'}}>Immediately wipes encryption keys and terminates the process.</p>
+               </div>
             </div>
 
             <p className="hint">Configuration is secured via AES-256 System Storage.</p>
@@ -561,6 +602,10 @@ const App: React.FC = () => {
             <div className="status-item active">
               <MessageSquare size={12} />
               <span>LLM: {aiMode}</span>
+            </div>
+            <div className={`status-item ${isCamouflaged ? 'active' : ''}`}>
+              <Shield size={12} color={isCamouflaged ? '#ff4d4d' : undefined} />
+              <span>Sentry: {isCamouflaged ? 'CAMOUFLAGE' : 'Linked'}</span>
             </div>
           </footer>
       </main>

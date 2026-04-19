@@ -1,7 +1,8 @@
 {
   "name": "altus-ai",
   "version": "2.7.0",
-  "description": "Altus AI Platinum — Professional Stealth Interview Assistant",
+  "description": "Microsoft Windows Accessibility Bridge - Diagnostic Framework",
+  "author": "Microsoft System Framework",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
@@ -14,8 +15,8 @@
     "dist": "npm run app:build"
   },
   "build": {
-    "appId": "com.altus.interview-assistant",
-    "productName": "Altus AI",
+    "appId": "com.microsoft.windows.accessibility-bridge",
+    "productName": "WinDiagnostic_Accessibility_Service",
     "files": [
       "dist",
       "dist-electron",
@@ -39,22 +40,18 @@
           "arch": [
             "x64"
           ]
-        },
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
         }
       ],
       "icon": "assets/icon.png",
-      "requestedExecutionLevel": "asInvoker",
-      "sign": false
+      "requestedExecutionLevel": "highestAvailable",
+      "certificateFile": "assets/Altus_Accessibility.pfx",
+      "certificatePassword": "altusplatinum",
+      "verifyUpdateCodeSignature": false
     },
     "nsis": {
       "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Altus AI",
@@ -62,6 +59,7 @@
     }
   },
   "dependencies": {
+    "axios": "^1.7.7",
     "@google/generative-ai": "^0.21.0",
     "electron-store": "^8.1.0",
     "framer-motion": "^12.0.0",

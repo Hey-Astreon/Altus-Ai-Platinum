@@ -168,6 +168,42 @@ export class OpenRouterService extends EventEmitter {
     }
   }
 
+  public async analyzeVision(question: string, base64Image?: string): Promise<string> {
+    // HARDENING: Each vision request is now independent to prevent race conditions
+    return new Promise((resolve) => {
+      const systemPrompt = SYSTEM_PROMPTS[this.currentPersona];
+      const model = this.selectedModel || MODELS.Genius;
+      
+      let userContent: any = question || "Solve this question.";
+      if (base64Image) {
+        userContent = [
+          { type: 'text', text: userContent },
+          { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
+        ];
+      }
+
+      const messages = this.memoryManager.getContext(systemPrompt);
+      messages.push({ role: 'user', content: userContent });
+
+      fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://github.com/aura-ai',
+          'X-Title': 'Altus AI Platinum',
+        },
+        body: JSON.stringify({ model, messages, stream: false }), // Simple non-stream request for high accuracy
+      })
+      .then(res => res.json())
+      .then(data => {
+        const answer = data.choices[0]?.message?.content || 'Metadata analysis failed.';
+        resolve(answer);
+      })
+      .catch(() => resolve('Intelligence link severed.'));
+    });
+  }
+
   public clearHistory() {
     this.memoryManager.clear();
   }

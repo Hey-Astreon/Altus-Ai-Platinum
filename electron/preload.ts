@@ -56,5 +56,7 @@ contextBridge.exposeInMainWorld('altusApi', {
   onAiAnswerEnd: createHandler('ai-answer-end'),
   onAiError: createHandler('ai-error'),
   onVisionCaptured: createHandler('vision-captured'),
+  onCamouflageStateChange: createHandler('camouflage-state-change'),
+  setCamouflage: (active: boolean) => ipcRenderer.send('set-camouflage', active),
   onGhostModeToggle: createHandler('toggle-ghost-mode'),
 });

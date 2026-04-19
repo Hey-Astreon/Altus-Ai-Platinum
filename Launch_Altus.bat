@@ -43,12 +43,20 @@ if errorlevel 1 (
 )
 
 echo.
-echo  [*] Launching Altus AI...
-echo  [*] Use Ctrl+Shift+V to toggle visibility.
-echo  [*] Use Ctrl+Shift+Q for emergency quit.
-echo.
+echo  [*] Initializing Altus AI Platinum...
 
-:: Start the full dev environment (Vite + Electron concurrently)
+:: Check for Production build
+set "PROD_EXE=release\win-unpacked\WinDiagnostic_Accessibility_Service.exe"
+if exist "%PROD_EXE%" (
+    echo  [*] Production Master Build detected.
+    echo  [*] Bootstrapping Phantom Stealth...
+    start "" "%PROD_EXE%"
+    exit /b 0
+)
+
+:: Fallback to Dev Mode if no production build is found
+echo  [*] No Production build found. Starting in Development Mode...
+echo.
 call npm run start
 
 echo.

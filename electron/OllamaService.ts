@@ -147,4 +147,32 @@ export class OllamaService extends EventEmitter {
       this.emit('answer-end', errorMsg);
     }
   }
+
+  public async analyzeVision(question: string, base64Image?: string): Promise<string> {
+    // HARDENING: Each local vision request is now independent to prevent race conditions
+    try {
+      const model = base64Image ? LOCAL_MODELS.Vision : LOCAL_MODELS[this.currentMode];
+      const systemPrompt = SYSTEM_PROMPTS[this.currentPersona];
+      const messages = this.memoryManager.getContext(systemPrompt);
+
+      let userMessage: any = {
+        role: 'user',
+        content: question || "Identify the code or problem shown.",
+      };
+      if (base64Image) {
+        userMessage.images = [base64Image.replace(/^data:image\/[a-z]+;base64,/, "")];
+      }
+      messages.push(userMessage);
+
+      const response = await axios.post(OLLAMA_URL, {
+        model, messages, stream: false, // Simple non-stream request for high accuracy
+        options: { temperature: 0.1, num_ctx: 4096 }
+      });
+
+      return response.data.message?.content || 'Local analysis failed.';
+    } catch (e) {
+      console.error('[Ollama analyzeVision] Failed:', e);
+      return 'Local intelligence link offline.';
+    }
+  }
 }

@@ -7,8 +7,18 @@ import { QuestionDetector } from './QuestionDetector';
 import { VisionService } from './VisionService';
 import { Exporter } from './Exporter';
 import { SettingsService } from './SettingsService';
+import { StealthService } from './StealthService';
+import { PhantomBootstrap } from './PhantomBootstrap';
+import { AccessibilityService } from './AccessibilityService';
 
 const isDev = !app.isPackaged;
+
+// SILENT SENTRY: Suppress all forensic footprints in production
+if (!isDev) {
+  console.log = () => {};
+  console.error = () => {};
+  console.warn = () => {};
+}
 
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
@@ -16,6 +26,8 @@ let sttService: AssemblyAIService | null = null;
 let aiService: OpenRouterService | OllamaService | null = null;
 let settings: SettingsService = new SettingsService();
 let visionService: VisionService = new VisionService();
+let stealthService: StealthService = new StealthService();
+let accessibilityService: AccessibilityService = new AccessibilityService();
 let detector: QuestionDetector = new QuestionDetector();
 let userSpeakerId: string | null = null;
 
@@ -84,6 +96,11 @@ function createWindow() {
 
   mainWindow.loadURL(startUrl);
 
+  // Initialize Stealth Sentry
+  stealthService.start();
+  // Listener will be attached in initializeApp to avoid duplication
+
+
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
   });
@@ -129,31 +146,70 @@ function registerShortcuts() {
   globalShortcut.register('CommandOrControl+Shift+G', () => {
     mainWindow?.webContents.send('toggle-ghost-mode');
   });
+
+  // NUCLEAR PROTOCOL: Ctrl+Alt+Shift+N (Emergency Purge & Kill)
+  globalShortcut.register('CommandOrControl+Alt+Shift+N', () => {
+    settings.purgeAll();
+    app.exit(0);
+  });
 }
 
-app.whenReady().then(() => {
-  createWindow();
-  createTray();
-  registerShortcuts();
+async function initializeApp() {
+  // PHASE 13B: Engage Phantom Bootstrap before anything else
+  const proceed = await PhantomBootstrap.bootstrap();
+  if (!proceed) return; // Self-relay successful, original process is exiting
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+  app.whenReady().then(() => {
+    createWindow();
+    createTray();
+    registerShortcuts();
 
-  // STEALTH AUDIO HANDLER
-  // Automatically approves requests for system audio capture without showing the picker.
-  session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
-    desktopCapturer.getSources({ types: ['screen', 'window'] }).then((sources) => {
-      // Find the screen or window to capture. For system audio loopback on Windows,
-      // any valid source with audio: true usually works if the OS supports it.
-      callback({ video: sources[0], audio: 'loopback' });
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+
+    // Environmental Stealth Sentry
+    stealthService.on('threat-state-change', (isThreatActive) => {
+      // HARDENING: Blackout window in capture streams when threats are near
+      mainWindow?.setContentProtection(isThreatActive);
+      mainWindow?.webContents.send('camouflage-state-change', isThreatActive);
+    });
+
+    // Accessibility Ghost Solver
+    accessibilityService.start();
+    accessibilityService.on('question-detected', async (text) => {
+      if (!aiService) return;
+      
+      mainWindow?.webContents.send('ai-answer-start');
+      const response = await aiService.analyzeVision(`SOLVE THIS METTL TEST QUESTION: ${text}`);
+      mainWindow?.webContents.send('ai-answer-end');
+      mainWindow?.webContents.send('vision-captured', response || 'Analysis failed');
+    });
+
+    // STEALTH AUDIO HANDLER
+    session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
+      desktopCapturer.getSources({ types: ['screen', 'window'] }).then((sources) => {
+        callback({ video: sources[0], audio: 'loopback' });
+      });
     });
   });
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit();
+  });
+}
+
+// STABILITY SHIELD: Prevent silent crashes from unhandled network or system exceptions
+process.on('unhandledRejection', (reason) => {
+  if (isDev) console.error('[Stability Shield] Unhandled Rejection:', reason);
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+process.on('uncaughtException', (error) => {
+  if (isDev) console.error('[Stability Shield] Uncaught Exception:', error);
 });
+
+// Start the Phantom Lifecycle
+initializeApp();
 
 app.on('before-quit', () => {
   // Hardening: Cleanly unbind all resources to prevent port/cache locks on restart
@@ -368,13 +424,12 @@ ipcMain.on('set-device', (event, deviceId: string) => {
   settings.saveSetting('selectedDeviceId', deviceId);
 });
 
-ipcMain.on('audio-chunk', (event, float32Data: Float32Array) => {
-  // Convert Float32 to Int16 PCM here in Node to satisfy low-latency UI requirements
-  const pcmData = new Int16Array(float32Data.length);
-  for (let i = 0; i < float32Data.length; i++) {
-    pcmData[i] = Math.max(-1, Math.min(1, float32Data[i])) * 0x7FFF;
-  }
-  sttService?.sendAudio(Buffer.from(pcmData.buffer));
+ipcMain.on('set-camouflage', (event, active: boolean) => {
+  mainWindow?.setContentProtection(active);
+});
+
+ipcMain.on('audio-chunk', (event, pcmBuffer: ArrayBuffer) => {
+  sttService?.sendAudio(Buffer.from(pcmBuffer));
 });
 
 ipcMain.on('stop-audio-capture', () => {

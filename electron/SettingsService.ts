@@ -57,4 +57,8 @@ export class SettingsService {
   public getSetting(key: string, defaultValue: any): any {
     return this.store.get(key, defaultValue);
   }
+
+  public purgeAll() {
+    this.store.clear();
+  }
 }
