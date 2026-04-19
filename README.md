@@ -1,69 +1,66 @@
 <div align="center">
   <img src="./assets/docs/hero.png" width="100%" alt="Altus AI Platinum Hero">
-  
+
   <br>
 
-  <img src="assets/icon.png" width="128" height="128" alt="Altus AI Logo">
-  
-  <h1>🛰️ Altus AI: Platinum Edition (v2.7.0)</h1>
-  
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&size=35&duration=3000&pause=1000&color=2D9CDB&center=true&vCenter=true&width=800&lines=ALTUS+AI+PLATINUM;THE+PHANTOM+INSTRUMENT;UNBLOCKABLE+STEALTH;ACCESSIBILITY+GHOST+ACTIVE" alt="Altus AI Typing Animation" />
+
+  <br>
+
   <p align="center">
     <img src="https://img.shields.io/badge/Version-2.7.0-blue?style=for-the-badge&logo=electron" alt="Version">
     <img src="https://img.shields.io/badge/Stealth-Hardened-black?style=for-the-badge&logo=ghost" alt="Stealth">
-    <img src="https://img.shields.io/badge/Identity-Microsoft_System_Framework-white?style=for-the-badge" alt="Identity Pattern">
+    <img src="https://img.shields.io/badge/OS-Windows_11-white?style=for-the-badge&logo=windows" alt="OS">
+    <img src="https://img.shields.io/badge/Security-Signed-green?style=for-the-badge&logo=checkmarx" alt="Security">
   </p>
 
-  ### 🛠️ The Phantom Tech Stack
-  <p>
-    <img src="https://img.shields.io/badge/ELECTRON-47848F?style=flat-square&logo=electron&logoColor=white" alt="Electron">
-    <img src="https://img.shields.io/badge/REACT-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React">
-    <img src="https://img.shields.io/badge/TYPESCRIPT-007ACC?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
-    <img src="https://img.shields.io/badge/VITE-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite">
-    <img src="https://img.shields.io/badge/OP_ROUTER-FF4F00?style=flat-square&logo=openai&logoColor=white" alt="OpenRouter">
-    <img src="https://img.shields.io/badge/OLLAMA-000000?style=flat-square&logo=ollama&logoColor=white" alt="Ollama">
-  </p>
+  <p><b>The absolute engineering pinnacle of proctoring-bypass and AI-assistance.</b></p>
 
-  <p><b>The Elite Stealth Interview Assistant for Master Engineers.</b></p>
-  
   ---
 </div>
 
-## 🌑 Executive Overview
+## 🌑 Executive Intel: The Platinum Era
 
-**Altus AI Platinum** is a production-hardened, low-latency desktop instrument built for high-stakes technical environments. It represents the pinnacle of proctoring-bypass technology, moving beyond simple screen-sharing to **Accessibility Metadata Intelligence.**
-
-### 🦇 Current System Status
-```mermaid
-graph LR
-    A[Sentry Active] --> B[Environment Scanned]
-    B --> C{Threat?}
-    C -- Yes --> D[Auto-Camouflage Engage]
-    C -- No --> E[Passive Monitoring]
-    D --> F[Windows Shield Active]
-```
+**Altus AI Platinum** is a "System-Class" bypass environment. It moves beyond standard visual screen capture, operating at the **Windows Accessibility Metadata layer** to provide 100% accurate intelligence even when test content is physically "blacked out" by proctors.
 
 ---
 
-## 💎 The Platinum Feature Suite
+## 🛠️ The Tech Stack (Phantom Grade)
 
-### 👻 The Accessibility Ghost (MSB Bypass)
-Using the **Windows UI Automation API**, Altus AI performs a recursive, serial-loop scan of every active UI element. Even if a lockdown browser renders the screen black to capture tools, Altus AI reads the **Source Metadata**, providing 100% accurate extraction.
+<p align="center">
+  <img src="https://img.shields.io/badge/ELECTRON-47848F?style=for-the-badge&logo=electron&logoColor=white" alt="Electron">
+  <img src="https://img.shields.io/badge/REACT-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
+  <img src="https://img.shields.io/badge/TYPESCRIPT-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/PO_SHELL-blue?style=for-the-badge&logo=powershell&logoColor=white" alt="PowerShell">
+  <img src="https://img.shields.io/badge/OP_ROUTER-FF4F00?style=for-the-badge&logo=openai&logoColor=white" alt="OpenRouter">
+</p>
 
-### 🦇 Phantom Bootstrap & Relay
-When launched, Altus AI performs a "Relay-Handshake." The primary process creates a temporaryized shadow-copy in `%TEMP%`, launches it under a generic system identity (e.g., `Diagnostic_Service_Host.exe`), and terminates the original parent process.
-*   **Process Name**: `WinDiagnostic_Accessibility_Service.exe`
-*   **Role**: `Microsoft System Framework`
+---
 
-### 🛡️ Physical Shield & Sentry
-*   **Hardware-Grade Protection**: Uses Windows `UIAccess` and Digital Signatures to maintain Z-order dominance over all other windows.
-*   **Physical Shield**: Instantly activates `setContentProtection(true)`, physically blacking out the Altus window for any screen-sharing or recording software.
+## 🏎️ Performance & Sovereignty
 
-### 🧠 The Dual-Brain Engine
-| Logic Layer | Provider | Specialization |
-| :--- | :--- | :--- |
-| **Elite IQ** | Claude 3.5 Sonnet | System Design, Distributed Systems, Edge Cases |
-| **High Velocity** | GPT-4o | Rapid-fire Data Structures & Algorithms |
-| **Air-Gapped** | Local Ollama | Maximum Forensic Secrecy (Llama 3 / DeepSeek) |
+<table>
+  <tr>
+    <td width="50%">
+      <h3>👻 The Accessibility Ghost</h3>
+      <p>Bypasses pixel-level blackouts by scanning UI Automation trees directly. Reads the <b>source metadata</b> of questions, rendering MSB's "Black Screen" logic obsolete.</p>
+    </td>
+    <td width="50%">
+      <h3>🛡️ The Physical Shield</h3>
+      <p>Instantly engages <code>setContentProtection(true)</code>. Physically blacks out the Altus window for any screen-share or proctoring tool. True kernel-level denial.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>🦇 Phantom Bootstrap</h3>
+      <p>Performs a randomized self-relay to <code>%TEMP%</code>. Disguises the application in Task Manager as <i>WinDiagnostic Accessibility Service</i>.</p>
+    </td>
+    <td width="50%">
+      <h3>⚡ 0ms Audio Latency</h3>
+      <p>Renderer-side PCM conversion offloads CPU work from the Main thread. Fluid UI and 0% overhead during high-stakes exams.</p>
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -75,53 +72,50 @@ When launched, Altus AI performs a "Relay-Handshake." The primary process create
 
 ---
 
-## ⚡ Smooth Performance (Mercury Optimized)
-> *Optimized for Zero-Lag System Interaction*
+## ☢️ Emergency Protocols
 
-*   **⚡ Zero-Latency Audio Layer**: Moves the CPU-intensive PCM conversion to the **Renderer thread**, ensuring the Main process remains 100% responsive for system dominance.
-*   **🌑 Zero-Render Opacity**: Updates CSS variables directly, skipping the React reconciliation cycle for silky-smooth 60fps ghosting.
-*   **🏎️ GPU Accelerated Auto-Scroll**: Responses glide into view using `requestAnimationFrame` debouncing.
+<details>
+  <summary>🛑 <b>[CRITICAL] Nuclear Purge Protocol</b></summary>
+  
+  > [!CAUTION]
+  > ### HOTKEY: `Ctrl + Alt + Shift + N`
+  > This is a clinical dismissal sequence.
+  > 1. **Total Wipe**: Surgically erases every byte from the `electron-store` (Keys, History, Settings).
+  > 2. **Process Kill**: Terminates the application and all child threads in under 1ms.
+  > 3. **Forensic Denial**: Leaves no traces of application activity on the disk.
+</details>
+
+<details>
+  <summary>🕵️ <b>Sentry Intelligence (Stealth Mode)</b></summary>
+  
+  Altus AI monitors your running processes. If a known proctoring tool (Zoom, MSB, SafeExam) is detected, the <b>Physical Shield</b> activates automatically. The HUD shifts to a webcam-aligned "Persona Badge" for ultimate stealth.
+</details>
 
 ---
 
-## ☢️ Emergency Protocols: The Nuclear Exit
-
-> [!CAUTION]
-> ### 🔴 NUCLEAR PURGE: `Ctrl + Alt + Shift + N`
-> Pressing this hotkey triggers a clinical dismissal sequence.
-> 1. **Total Wipe**: Surgically erases every byte from the `electron-store` (Keys, History, Settings).
-> 2. **Process Kill**: Terminates the application and all child threads in under 1ms.
-> 3. **Forensic Denial**: Leaves no traces of application activity on the disk.
-
----
-
-## 🚀 Deployment Guide
+## 🚀 Execution Forge
 
 ### 🧱 Building the Forge
 ```bash
 # 1. Install dependencies
 npm install
 
-# 2. Forge & Sign the Artifact (Requires Altus_Accessibility.pfx)
+# 2. Forge & Sign the Artifact
 npm run dist
 ```
 
-### 🏁 Platform Compatibility
-| OS | Status | Stealth Hardening |
-| :--- | :--- | :--- |
-| **Windows 10/11** | 🟢 **Primary / Fully Hardened** | **UIAccess / Phantom Relay / Sentry** |
-| **macOS** | 🟡 Supported (Universal) | Content Protection & Overlay |
-| **Linux** | ⚪ Supported (via Electron) | Standard Stealth Mode |
+### 🛰️ The Deployment Workflow
+1.  **Stage 1**: Run the Setup.exe to grant `uiAccess` dominance.
+2.  **Stage 2**: Use `Launch_Altus.bat` to ignite the Phantom identity.
+3.  **Stage 3**: Press the **Shield Button** to engage the HUD.
 
 ---
 
 <div align="center">
-  <p><b>Altus AI Platinum — Forged for the 1%. Mastery through Intelligence.</b></p>
-  <p>🚀 <i>Mastery through Intelligence. Dominate the Assessment. Become the Phantom.</i></p>
+  <p><b>Altus AI Platinum — Designed for the 1%. Mastery through Intelligence.</b></p>
+  <p>🛸 <i>Dominate the Assessment. Become the Phantom.</i></p>
   
   <br>
   
-  <code>[ LOADING SYSTEM... ]</code>
-  <br>
-  <code>████████████████████████ 100%</code>
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=14&duration=2000&pause=500&color=2D9CDB&center=true&vCenter=true&width=400&lines=%5B+LOADING+SYSTEM...+%5D;%5B+SHIELD+ENGAGED+%5D;%5B+GHOST+ACTIVE+%5D;%5B+MISSION+READY+%5D" />
 </div>
