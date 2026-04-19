@@ -1,7 +1,7 @@
 {
   "name": "altus-ai",
-  "version": "1.0.0",
-  "description": "Altus-AI — Stealth AI Interview Assistant",
+  "version": "2.7.0",
+  "description": "Altus AI Platinum — Professional Stealth Interview Assistant",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
@@ -58,7 +58,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Altus AI",
-      "artifactName": "${productName}-Setup-${version}.${ext}"
+      "artifactName": "Altus-AI-Platinum-Setup-v${version}.${ext}"
     }
   },
   "dependencies": {

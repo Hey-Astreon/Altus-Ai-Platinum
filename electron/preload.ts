@@ -8,7 +8,7 @@ const createHandler = (channel: string) => (callback: (...args: any[]) => void) 
   };
 };
 
-contextBridge.exposeInMainWorld('auraApi', {
+contextBridge.exposeInMainWorld('altusApi', {
   hideWindow: () => ipcRenderer.send('window-hide'),
   closeApp: () => ipcRenderer.send('window-close'),
   setIgnoreMouseEvents: (ignore: boolean, options?: { forward: boolean }) => 

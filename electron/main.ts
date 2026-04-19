@@ -33,8 +33,8 @@ function createTray() {
   tray = new Tray(iconPath);
   
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Show Aura', click: () => mainWindow?.show() },
-    { label: 'Hide Aura', click: () => mainWindow?.hide() },
+    { label: 'Show Altus AI', click: () => mainWindow?.show() },
+    { label: 'Hide Altus AI', click: () => mainWindow?.hide() },
     { type: 'separator' },
     { label: 'Settings', click: () => mainWindow?.webContents.send('open-settings') },
     { type: 'separator' },
@@ -66,6 +66,7 @@ function createWindow() {
     transparent: true,
     alwaysOnTop: true,
     skipTaskbar: true,
+    type: 'toolbar', // Hardening: Further hiding from OS task switcher
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,

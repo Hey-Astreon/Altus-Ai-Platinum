@@ -4,8 +4,8 @@ import { Cpu, Zap, Brain, MessageSquare, Settings, Eye, Trash2, Activity, Cloud,
 import { MODEL_REGISTRY } from './constants/models';
 
 // Safe accessor — returns undefined when running outside Electron
-const getApi = () => (window as any).auraApi as Record<string, Function> | undefined;
-const IS_ELECTRON = typeof (window as any).auraApi !== 'undefined';
+const getApi = () => (window as any).altusApi as Record<string, Function> | undefined;
+const IS_ELECTRON = typeof (window as any).altusApi !== 'undefined';
 
 const App: React.FC = () => {
   const [transcript, setTranscript] = useState<string[]>([]);
@@ -269,7 +269,7 @@ const App: React.FC = () => {
 
   const startCapture = async () => {
     if (!IS_ELECTRON) {
-      console.warn('[Aura] Audio capture requires Electron');
+      console.warn('[Altus AI] Audio capture requires Electron');
       return;
     }
     try {
@@ -310,7 +310,7 @@ const App: React.FC = () => {
     audioContextRef.current?.close();
     getApi()?.stopAudioCapture();
     setIsCapturing(false);
-    console.log('[Aura] Audio capture stopped');
+    console.log('[Altus AI] Audio capture stopped');
   };
 
   const handleClose = () => {
@@ -531,7 +531,7 @@ const App: React.FC = () => {
               {isThinking && (
                 <div className="answer-card thinking">
                   <div className="pulse"></div>
-                  <span>Aura is thinking...</span>
+                  <span>Altus AI is thinking...</span>
                   {visionContext && (
                     <img src={visionContext} alt="Vision Context" className="vision-thumbnail" />
                   )}

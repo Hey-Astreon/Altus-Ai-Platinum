@@ -1,10 +1,10 @@
 @echo off
-title Aura — AI Interview Assistant
+title Altus AI — Stealth AI Interview Assistant
 color 0B
 
 echo.
 echo  ============================================
-echo   AURA — Stealth AI Interview Assistant
+echo   ALTUS AI — Stealth AI Interview Assistant
 echo  ============================================
 echo.
 
@@ -12,7 +12,7 @@ echo.
 cd /d "%~dp0"
 
 :: Absolute Cleanup: Kill any hanging processes from previous sessions
-echo  [*] Cleaning up previous Aura instances...
+echo  [*] Cleaning up previous Altus AI instances...
 taskkill /F /IM electron.exe /T >nul 2>&1
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5173') do (
     taskkill /F /PID %%a >nul 2>&1
@@ -43,7 +43,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo  [*] Launching Aura...
+echo  [*] Launching Altus AI...
 echo  [*] Use Ctrl+Shift+V to toggle visibility.
 echo  [*] Use Ctrl+Shift+Q for emergency quit.
 echo.
@@ -52,5 +52,5 @@ echo.
 call npm run start
 
 echo.
-echo  Aura has exited.
+echo  Altus AI has exited.
 pause
