@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { EventEmitter } from 'events';
 import { InterviewPersona, ModelMode } from './OpenRouterService';
+import { MemoryManager } from './MemoryManager';
 
 const OLLAMA_URL = 'http://127.0.0.1:11434/api/chat';
 
@@ -32,10 +33,12 @@ const SYSTEM_PROMPTS: Record<InterviewPersona, string> = {
 export class OllamaService extends EventEmitter {
   private currentMode: ModelMode = 'Turbo';
   private currentPersona: InterviewPersona = 'Technical';
-  private history: { role: 'user' | 'assistant' | 'system', content: string | any[] }[] = [];
+  private memoryManager: MemoryManager;
 
-  constructor() {
+  constructor(openRouterKey: string) {
     super();
+    this.memoryManager = new MemoryManager(openRouterKey);
+
     // Verify Ollama connection silently
     axios.get('http://127.0.0.1:11434/api/tags').catch(() => {
       console.warn('[Aura Local] Ollama is not running on localhost:11434. Local AI will fail.');
@@ -48,7 +51,7 @@ export class OllamaService extends EventEmitter {
 
   public setPersona(persona: InterviewPersona) {
     this.currentPersona = persona;
-    this.history = []; // Reset history when changing personas
+    this.memoryManager.clear(); // Reset history when changing personas
   }
 
   public async getAnswer(question: string, base64Image?: string) {
@@ -66,23 +69,15 @@ export class OllamaService extends EventEmitter {
       userMessage.images = [strippedBase64];
     }
 
-    if (this.history.length === 0 || this.history[0].role !== 'system') {
-      this.history = [{ role: 'system', content: systemPrompt }];
-    }
-
-    this.history.push(userMessage);
-
-    // Keep history reasonably short (last 5 interactions) to preserve exact context window limits
-    if (this.history.length > 11) {
-      this.history = [this.history[0], ...this.history.slice(this.history.length - 10)];
-    }
+    const messages = this.memoryManager.getContext(systemPrompt);
+    messages.push(userMessage);
 
     try {
       const response = await axios.post(
         OLLAMA_URL,
         {
           model: model,
-          messages: this.history,
+          messages: messages,
           stream: true,
           options: {
             temperature: 0.3, // Keep it precise
@@ -113,7 +108,7 @@ export class OllamaService extends EventEmitter {
       });
 
       response.data.on('end', () => {
-        this.history.push({ role: 'assistant', content: fullResponse });
+        this.memoryManager.addInteraction(userMessage, fullResponse);
         this.emit('answer-end', fullResponse);
       });
 

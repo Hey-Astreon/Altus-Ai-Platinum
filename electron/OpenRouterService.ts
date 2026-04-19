@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { EventEmitter } from 'events';
+import { MemoryManager } from './MemoryManager';
 
 export type InterviewPersona = 'Technical' | 'SystemDesign' | 'Behavioral';
 export type ModelMode = 'Turbo' | 'Genius';
@@ -33,11 +34,12 @@ export class OpenRouterService extends EventEmitter {
   private apiKey: string;
   private currentMode: ModelMode = 'Turbo';
   private currentPersona: InterviewPersona = 'Technical';
-  private history: { role: 'user' | 'assistant' | 'system', content: string }[] = [];
+  private memoryManager: MemoryManager;
 
   constructor(apiKey: string) {
     super();
     this.apiKey = apiKey;
+    this.memoryManager = new MemoryManager(apiKey);
   }
 
   public setMode(mode: ModelMode) {
@@ -67,12 +69,9 @@ export class OpenRouterService extends EventEmitter {
       ];
     }
 
-    // Build message context
-    const messages = [
-      { role: 'system', content: systemPrompt },
-      ...this.history.slice(-6), // Context
-      { role: 'user', content: userContent }
-    ];
+    // Build message context via Memory Manager
+    const messages = this.memoryManager.getContext(systemPrompt);
+    messages.push({ role: 'user', content: userContent });
 
     try {
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -122,9 +121,8 @@ export class OpenRouterService extends EventEmitter {
         }
       }
 
-      // Save to history
-      this.history.push({ role: 'user', content: question });
-      this.history.push({ role: 'assistant', content: fullText });
+      // Save to history via Memory Manager (which triggers silent background summarization)
+      this.memoryManager.addInteraction({ role: 'user', content: userContent }, fullText);
       
       this.emit('answer-end', fullText);
     } catch (error) {
@@ -134,6 +132,6 @@ export class OpenRouterService extends EventEmitter {
   }
 
   public clearHistory() {
-    this.history = [];
+    this.memoryManager.clear();
   }
 }

@@ -159,7 +159,7 @@ ipcMain.on('start-audio-capture', () => {
     if (currentProvider === 'Cloud') {
       aiService = new OpenRouterService(openRouterKey);
     } else {
-      aiService = new OllamaService();
+      aiService = new OllamaService(openRouterKey);
     }
     
     // Apply current settings to new service
@@ -224,7 +224,7 @@ ipcMain.on('set-ai-provider', (event, provider: 'Cloud' | 'Local') => {
     if (provider === 'Cloud') {
       aiService = new OpenRouterService(openRouterKey || '');
     } else {
-      aiService = new OllamaService();
+      aiService = new OllamaService(openRouterKey || '');
     }
     
     // Restore states
