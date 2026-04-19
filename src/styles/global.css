@@ -131,6 +131,75 @@ body {
   box-shadow: var(--neon-glow);
 }
 
+.controls {
+  display: flex;
+  gap: 12px; /* Premium spacing */
+  align-items: center;
+  -webkit-app-region: no-drag;
+}
+
+.control-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--gh-text);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--gh-border);
+  color: var(--neon-white);
+  box-shadow: var(--neon-glow);
+}
+
+.control-btn:active {
+  transform: scale(0.92); /* Mechanical click feel */
+}
+
+.control-btn.active {
+  color: var(--gh-accent);
+  border-color: var(--gh-accent);
+}
+
+.mode-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--gh-border);
+  color: var(--gh-text-bright);
+  padding: 0 12px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.5px;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--neon-white);
+  box-shadow: var(--neon-glow);
+}
+
+.mode-btn:active {
+  transform: scale(0.95);
+}
+
+.mode-btn.turbo { color: var(--gh-text-bright); }
+.mode-btn.genius { color: var(--neon-white); }
+
 /* INSIGHT WINDOW: Obsidian Glass */
 .insight-window {
   flex: 1;
