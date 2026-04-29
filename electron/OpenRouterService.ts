@@ -95,8 +95,8 @@ export class OpenRouterService extends EventEmitter {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://github.com/aura-ai', // Required by OpenRouter
-          'X-Title': 'Aura Interview Assistant',
+          'HTTP-Referer': 'https://github.com/Hey-Astreon/Altus-Ai-Platinum',
+          'X-Title': 'Altus AI Platinum',
         },
         body: JSON.stringify({
           model: model,

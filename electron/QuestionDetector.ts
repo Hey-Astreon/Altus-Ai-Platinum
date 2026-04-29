@@ -6,7 +6,7 @@ export class QuestionDetector {
    * We look for question marks or starting keywords.
    */
   private lastTriggeredTime: number = 0;
-  private readonly TRIGGER_COOLDOWN = 3000; // 3 seconds cooldown
+  private readonly TRIGGER_COOLDOWN = 1500; // 1.5 seconds cooldown (was 3s — too slow for Discord)
 
   /**
    * Simple heuristic to detect if a transcript contains a question.
@@ -28,11 +28,11 @@ export class QuestionDetector {
     ];
 
     const hasQuestionMark = trimmed.includes('?');
-    const startsWithKeyword = questionKeywords.some(keyword => trimmed.startsWith(keyword));
+    const containsKeyword = questionKeywords.some(keyword => trimmed.includes(keyword));
     
     // Interview questions are usually longer than 5 words
     const wordCount = trimmed.split(/\s+/).length;
-    const isLikelyQuestion = hasQuestionMark || (startsWithKeyword && wordCount >= 4);
+    const isLikelyQuestion = hasQuestionMark || (containsKeyword && wordCount >= 4);
 
     if (isLikelyQuestion) {
       this.lastTriggeredText = trimmed;

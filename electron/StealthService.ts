@@ -9,15 +9,17 @@ export class StealthService extends EventEmitter {
   private scanInterval: NodeJS.Timeout | null = null;
   private isThreatActive: boolean = false;
 
-  // List of processes that indicate active screen sharing or video calls
+  // List of processes that indicate EXTERNAL screen recording/sharing (not user's own apps)
+  // NOTE: Discord.exe intentionally excluded — it's a user communication tool, not a threat
   private readonly THREAT_SIGNATURES = [
-    'Zoom.exe',
-    'CptHost.exe', // Zoom sharing component
-    'Teams.exe',
+    'CptHost.exe',        // Zoom screen sharing component
+    'Teams.exe',          // Microsoft Teams
     'ms-teams.exe',
-    'Discord.exe',
-    'obs64.exe',
-    'Loom.exe'
+    'obs64.exe',          // OBS Studio
+    'obs32.exe',
+    'Loom.exe',           // Loom recorder
+    'ScreenRecorder.exe', // Windows Screen Recorder
+    'GoTo.exe',           // GoToMeeting
   ];
 
   constructor() {

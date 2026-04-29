@@ -55,7 +55,9 @@ export class AccessibilityService extends EventEmitter {
         }
       `.replace(/\s+/g, ' ').trim();
 
-      exec(`powershell -Command "${psScript}"`, (error, stdout) => {
+      exec(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${psScript}"`, 
+        { timeout: 4000 }, // Kill the PS process if it hangs > 4s
+        (error, stdout) => {
         this.isScanning = false;
         if (error || !stdout) {
           resolve(); 

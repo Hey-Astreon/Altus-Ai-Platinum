@@ -248,18 +248,26 @@ ipcMain.on('start-audio-capture', () => {
     aiService.setMode(currentMode);
     aiService.setPersona(currentPersona);
 
+    // DISCORD MODE: If using a non-default device (e.g. Stereo Mix), skip speaker
+    // calibration entirely — all audio IS the interviewer/girlfriend voice.
+    const selectedDeviceId = settings.getSetting('selectedDeviceId', 'default');
+    const isDiscordMode = selectedDeviceId !== 'default';
+
     sttService.on('transcript', (result) => {
-      // If we are calibrating and a final transcript arrives, lock the user's Speaker ID
-      if (!userSpeakerId && result.isFinal && result.speaker) {
-        userSpeakerId = result.speaker;
-        console.log('[Altus] Calibrated User Speaker ID:', userSpeakerId);
-        mainWindow?.webContents.send('calibration-complete', userSpeakerId);
+      // Only run speaker calibration in default mic mode
+      if (!isDiscordMode) {
+        if (!userSpeakerId && result.isFinal && result.speaker) {
+          userSpeakerId = result.speaker;
+          console.log('[Altus] Calibrated User Speaker ID:', userSpeakerId);
+          mainWindow?.webContents.send('calibration-complete', userSpeakerId);
+        }
       }
 
       mainWindow?.webContents.send('new-transcript', result);
       
-      // STEALTH FILTER: Only trigger AI if it's NOT the user speaking
-      const isUserSpeaking = userSpeakerId && result.speaker === userSpeakerId;
+      // STEALTH FILTER: In Discord mode, ALL speech triggers AI (it's all the other person).
+      // In normal mic mode, filter out the user's own voice.
+      const isUserSpeaking = !isDiscordMode && userSpeakerId && result.speaker === userSpeakerId;
 
       if (!isUserSpeaking && result.isFinal && detector.isQuestion(result.text)) {
         mainWindow?.webContents.send('ai-thinking');
@@ -281,7 +289,6 @@ ipcMain.on('start-audio-capture', () => {
 
     sttService.connect();
   }
-  mainWindow?.webContents.send('init-audio-capture');
 });
 
 ipcMain.on('set-ai-mode', (event, mode: ModelMode) => {
@@ -435,4 +442,5 @@ ipcMain.on('audio-chunk', (event, pcmBuffer: ArrayBuffer) => {
 ipcMain.on('stop-audio-capture', () => {
   sttService?.disconnect();
   sttService = null;
+  userSpeakerId = null; // BUG FIX: Reset calibration so next session starts fresh
 });

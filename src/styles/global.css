@@ -457,6 +457,11 @@ body {
   font-family: inherit;
 }
 
+.obsidian-select option {
+  background: var(--gh-bg-secondary);
+  color: var(--gh-text-bright);
+}
+
 .model-dash-list {
   display: flex;
   flex-direction: column;
@@ -556,6 +561,11 @@ body {
   color: var(--gh-text-bright);
   font-size: 0.9rem;
   outline: none;
+}
+
+select option {
+  background: var(--gh-bg-secondary);
+  color: var(--gh-text-bright);
 }
 
 .input-group input:focus {

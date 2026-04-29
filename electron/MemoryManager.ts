@@ -52,8 +52,20 @@ export class MemoryManager {
 
     this.isCompressing = true;
 
+    // Guard: need at least 1 full Q&A pair (2 items) before compressing
+    if (this.shortTermHistory.length < 2) {
+      this.isCompressing = false;
+      return;
+    }
+
     // Slice out the oldest Q&A pair (first 2 items in history)
     const agingContext = this.shortTermHistory.splice(0, 2);
+    if (agingContext.length < 2) {
+      // Incomplete pair — put it back to avoid data loss
+      this.shortTermHistory.unshift(...agingContext);
+      this.isCompressing = false;
+      return;
+    }
     
     try {
       const qText = typeof agingContext[0].content === 'string' 
@@ -88,8 +100,8 @@ Assistant: ${aText}`;
           headers: {
             'Authorization': `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://github.com/aura-ai',
-            'X-Title': 'Aura Memory Agent',
+            'HTTP-Referer': 'https://github.com/Hey-Astreon/Altus-Ai-Platinum',
+            'X-Title': 'Altus AI Platinum',
           }
         }
       );

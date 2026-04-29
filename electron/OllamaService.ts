@@ -42,7 +42,7 @@ export class OllamaService extends EventEmitter {
 
     // Verify Ollama connection silently
     axios.get('http://127.0.0.1:11434/api/tags').catch(() => {
-      console.warn('[Aura Local] Ollama is not running on localhost:11434. Local AI will fail.');
+      console.warn('[Altus AI Local] Ollama is not running on localhost:11434. Local AI will fail.');
     });
   }
 
@@ -139,8 +139,8 @@ export class OllamaService extends EventEmitter {
       });
 
     } catch (error: any) {
-      console.error('[Aura Local] Ollama API Error:', error.message);
-      let errorMsg = '\\n\\n**[AURA SYSTEM ERROR]** Ollama connection failed. ';
+      console.error('[Altus AI Local] Ollama API Error:', error.message);
+      let errorMsg = '\n\n**[LOCAL AI ERROR]** Ollama connection failed. ';
       if (error.code === 'ECONNREFUSED') {
          errorMsg += 'Please ensure Ollama is running (`ollama serve`) and the models (`llama3:8b`, `llava`) are installed.';
       }
