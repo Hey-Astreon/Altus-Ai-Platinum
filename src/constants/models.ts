@@ -32,14 +32,7 @@ export const MODEL_REGISTRY: ModelMetadata[] = [
     cost: 'Fast tokens',
     isVision: true
   },
-  {
-    id: 'google/gemini-flash-1.5-8b',
-    name: 'Gemini Flash 1.5',
-    power: '⚡ Fast / Efficient',
-    usage: 'Real-time Quick Answers',
-    cost: 'FREE (Low tier)',
-    isVision: true
-  },
+
   {
     id: 'meta-llama/llama-3.1-405b',
     name: 'Llama 3.1 405B',

@@ -32,8 +32,6 @@ let detector: QuestionDetector = new QuestionDetector();
 let userSpeakerId: string | null = null;
 
 let currentProvider: 'Cloud' | 'Local' = 'Cloud';
-let currentMode: ModelMode = 'Turbo';
-let currentPersona: InterviewPersona = 'Technical';
 let isAutoVisionEnabled: boolean = false;
 let visionInterval: NodeJS.Timeout | null = null;
 
@@ -155,10 +153,6 @@ function registerShortcuts() {
 }
 
 async function initializeApp() {
-  // PHASE 13B: Engage Phantom Bootstrap before anything else
-  const proceed = await PhantomBootstrap.bootstrap();
-  if (!proceed) return; // Self-relay successful, original process is exiting
-
   app.whenReady().then(() => {
     createWindow();
     createTray();
@@ -178,12 +172,12 @@ async function initializeApp() {
     // Accessibility Ghost Solver
     accessibilityService.start();
     accessibilityService.on('question-detected', async (text) => {
+      ensureAiService();
       if (!aiService) return;
       
-      mainWindow?.webContents.send('ai-answer-start');
+      mainWindow?.webContents.send('ai-thinking');
       const response = await aiService.analyzeVision(`SOLVE THIS METTL TEST QUESTION: ${text}`);
-      mainWindow?.webContents.send('ai-answer-end');
-      mainWindow?.webContents.send('vision-captured', response || 'Analysis failed');
+      mainWindow?.webContents.send('ai-answer-end', response || 'Analysis failed');
     });
 
     // STEALTH AUDIO HANDLER
@@ -236,43 +230,53 @@ ipcMain.on('start-audio-capture', () => {
 
   if (!sttService) {
     sttService = new AssemblyAIService(assemblyKey);
-    
-    // Instantiate correct AI provider
-    if (currentProvider === 'Cloud') {
-      aiService = new OpenRouterService(openRouterKey);
-    } else {
-      aiService = new OllamaService(openRouterKey);
+
+    // MUTUAL EXCLUSION: Pause Auto-Vision completely while mic is active.
+    // Only ONE answer source can be active at a time - voice takes full priority.
+    if (visionInterval) {
+      clearInterval(visionInterval);
+      visionInterval = null;
+      console.log('[Altus] Auto-Vision paused — mic is now the sole input source.');
     }
     
-    // Apply current settings to new service
-    aiService.setMode(currentMode);
-    aiService.setPersona(currentPersona);
+    ensureAiService();
 
-    // DISCORD MODE: If using a non-default device (e.g. Stereo Mix), skip speaker
-    // calibration entirely — all audio IS the interviewer/girlfriend voice.
+    // CALIBRATION FIX (FINAL): AssemblyAI real-time API has NO speaker diarization.
+    // result.speaker is ALWAYS undefined in streaming mode — it only exists in async API.
+    // Solution: Auto-complete calibration immediately. No "Say Hello" needed. Ever.
     const selectedDeviceId = settings.getSetting('selectedDeviceId', 'default');
     const isDiscordMode = selectedDeviceId !== 'default';
 
-    sttService.on('transcript', (result) => {
-      // Only run speaker calibration in default mic mode
-      if (!isDiscordMode) {
-        if (!userSpeakerId && result.isFinal && result.speaker) {
-          userSpeakerId = result.speaker;
-          console.log('[Altus] Calibrated User Speaker ID:', userSpeakerId);
-          mainWindow?.webContents.send('calibration-complete', userSpeakerId);
-        }
-      }
+    // Instantly dismiss the calibration toast the moment the connection is established
+    sttService.on('connect', () => {
+      userSpeakerId = 'AUTO_CALIBRATED';
+      mainWindow?.webContents.send('calibration-complete', 'AUTO_CALIBRATED');
+      console.log('[Altus] Calibration auto-completed. Mode:', isDiscordMode ? 'Discord/Stereo Mix' : 'Standard Mic');
+    });
 
+    let lastTriggerTime = 0;
+    const TRIGGER_COOLDOWN_MS = 3000; // 3 second cooldown between triggers
+
+    sttService.on('transcript', (result) => {
       mainWindow?.webContents.send('new-transcript', result);
       
-      // STEALTH FILTER: In Discord mode, ALL speech triggers AI (it's all the other person).
-      // In normal mic mode, filter out the user's own voice.
-      const isUserSpeaking = !isDiscordMode && userSpeakerId && result.speaker === userSpeakerId;
-
-      if (!isUserSpeaking && result.isFinal && detector.isQuestion(result.text)) {
+      if (result.isFinal && detector.isQuestion(result.text)) {
+        const now = Date.now();
+        if (now - lastTriggerTime < TRIGGER_COOLDOWN_MS) {
+          console.log(`[Altus] Cooldown active. Skipping duplicate trigger for: "${result.text}"`);
+          return;
+        }
+        lastTriggerTime = now;
+        console.log(`[Altus] Question detected: "${result.text}". Triggering AI brain...`);
         mainWindow?.webContents.send('ai-thinking');
         aiService?.getAnswer(result.text);
+      } else if (result.isFinal) {
+        console.log(`[Altus] Ignored final transcript (not a question): "${result.text}"`);
       }
+    });
+
+    sttService.on('error', (err) => {
+      mainWindow?.webContents.send('ai-error', `STT Error: ${err}`);
     });
 
     aiService.on('answer-chunk', (chunk) => {
@@ -291,15 +295,43 @@ ipcMain.on('start-audio-capture', () => {
   }
 });
 
-ipcMain.on('set-ai-mode', (event, mode: ModelMode) => {
-  currentMode = mode;
-  aiService?.setMode(mode);
+
+
+let chunkCount = 0;
+// CRITICAL: Receive PCM audio chunks from renderer and pipe to AssemblyAI
+ipcMain.on('audio-chunk', (event, chunk: ArrayBuffer) => {
+  if (sttService) {
+    sttService.sendAudio(Buffer.from(chunk));
+    chunkCount++;
+    if (chunkCount % 50 === 0) {
+      console.log(`[Altus AI] Audio pipeline active. Streaming data to AssemblyAI... (${chunkCount} chunks)`);
+    }
+  }
 });
 
-ipcMain.on('set-ai-persona', (event, persona: InterviewPersona) => {
-  currentPersona = persona;
-  aiService?.setPersona(persona);
+ipcMain.on('stop-audio-capture', () => {
+  if (sttService) {
+    sttService.disconnect();
+    sttService.removeAllListeners();
+    sttService = null;
+  }
+  if (aiService) {
+    aiService.abort?.();
+    aiService.removeAllListeners();
+    aiService = null;
+  }
+  userSpeakerId = null;
+  console.log('[Altus AI] Audio capture fully stopped and services torn down.');
+
+  // MUTUAL EXCLUSION: Resume Auto-Vision if it was previously enabled by the user.
+  if (isAutoVisionEnabled && !visionInterval) {
+    startAutoVisionLoop();
+    console.log('[Altus] Auto-Vision resumed — mic is now off.');
+  }
 });
+
+
+
 
 ipcMain.on('set-auto-vision', (event, enabled: boolean) => {
   isAutoVisionEnabled = enabled;
@@ -311,50 +343,28 @@ ipcMain.on('set-auto-vision', (event, enabled: boolean) => {
   }
 });
 
-// Switch Providers on the fly
-ipcMain.on('set-ai-provider', (event, provider: 'Cloud' | 'Local') => {
-  if (currentProvider === provider) return;
-  currentProvider = provider;
-  
-  if (aiService) {
-    // Teardown old events and abort any active requests
-    aiService.abort?.(); 
-    aiService.removeAllListeners('answer-chunk');
-    aiService.removeAllListeners('answer-end');
-    
-    // Spin up new service
-    const openRouterKey = settings.getKey('openrouter');
-    if (provider === 'Cloud') {
-      aiService = new OpenRouterService(openRouterKey || '');
-    } else {
-      aiService = new OllamaService(openRouterKey || '');
-    }
-    
-    // Restore states
-    aiService.setMode(currentMode);
-    aiService.setPersona(currentPersona);
-    
-    // Reattach listeners
-    aiService.on('answer-chunk', (chunk) => {
-        mainWindow?.webContents.send('ai-answer-chunk', chunk);
-    });
-    aiService.on('answer-end', (fullAnswer) => {
-        mainWindow?.webContents.send('ai-answer-end', fullAnswer);
-    });
-    aiService.on('error', (err) => {
-        mainWindow?.webContents.send('ai-error', err);
-    });
-  }
-});
+
 
 function startAutoVisionLoop() {
   if (visionInterval) clearInterval(visionInterval);
   visionInterval = setInterval(async () => {
-    if (isAutoVisionEnabled && currentPersona === 'Technical') {
+    // CRITICAL: Never fire Auto-Vision while a voice answer is being streamed
+    const isVoiceStreaming = (aiService as any)?.isStreaming === true;
+    if (isAutoVisionEnabled && !isVoiceStreaming) {
+      ensureAiService();
       try {
         const base64Image = await visionService.captureScreen();
         mainWindow?.webContents.send('vision-captured', base64Image);
-        aiService?.getAnswer("Analyze the current code/diagram and update your context. Be brief if nothing changed.", base64Image);
+        
+        // Run silently in background so it never interrupts voice streams
+        const visionResult = await aiService?.analyzeVision(
+          "CRITICAL: If there is an explicit coding test or technical interview question visible on the screen, provide exactly 6 conversational sentences of technical explanation to solve it. Keep it strictly to 6 sentences. However, if the question has ALREADY been answered in the visible text on the screen, or if there is NO technical question visible, you MUST reply EXACTLY with '[NO_ACTION]' and say absolutely nothing else.",
+          base64Image
+        );
+        
+        if (visionResult && !visionResult.includes('[NO_ACTION]') && !visionResult.includes('failed') && !visionResult.includes('severed')) {
+          mainWindow?.webContents.send('ai-answer-end', "\n\n**[Auto-Vision Detected]:**\n" + visionResult);
+        }
       } catch (err) {
         console.error('Auto-Vision failed:', err);
       }
@@ -373,15 +383,42 @@ ipcMain.on('capture-screen', async () => {
     const base64Image = await visionService.captureScreen();
     mainWindow?.webContents.send('vision-captured', base64Image);
     mainWindow?.webContents.send('ai-thinking');
+    
+    ensureAiService();
     aiService?.getAnswer('', base64Image);
   } catch (err) {
     console.error('Vision trigger failed:', err);
   }
+  }
 });
+
+function ensureAiService() {
+  if (aiService) return;
+  const openRouterKey = settings.getKey('openrouter');
+  if (!openRouterKey) return;
+
+  if (currentProvider === 'Cloud') {
+    aiService = new OpenRouterService(openRouterKey);
+  } else {
+    aiService = new OllamaService(openRouterKey);
+  }
+  
+  aiService.on('answer-chunk', (chunk) => {
+    mainWindow?.webContents.send('ai-answer-chunk', chunk);
+  });
+  aiService.on('answer-end', (fullAnswer) => {
+    mainWindow?.webContents.send('ai-answer-end', fullAnswer);
+  });
+  aiService.on('error', (err) => {
+    mainWindow?.webContents.send('ai-error', err);
+  });
+}
 
 ipcMain.on('get-settings-status', (event) => {
   event.reply('settings-status', { 
     hasKeys: settings.hasKeys(),
+    assemblyKey: settings.getKey('assembly'),
+    openRouterKey: settings.getKey('openrouter'),
     opacity: settings.getSetting('globalOpacity', 0.85),
     selectedModel: settings.getSetting('selectedModel', 'anthropic/claude-3.5-sonnet'),
     selectedDeviceId: settings.getSetting('selectedDeviceId', 'default'),
@@ -393,8 +430,20 @@ ipcMain.on('get-settings-status', (event) => {
 });
 
 ipcMain.on('save-settings', (event, { assembly, openrouter }) => {
-  if (assembly) settings.saveKey('assembly', assembly);
-  if (openrouter) settings.saveKey('openrouter', openrouter);
+  if (assembly) {
+    settings.saveKey('assembly', assembly);
+    if (sttService) {
+      sttService.disconnect();
+      sttService = new AssemblyAIService(assembly); // Rebuild to use new key
+      sttService.connect();
+    }
+  }
+  if (openrouter) {
+    settings.saveKey('openrouter', openrouter);
+    if (aiService instanceof OpenRouterService) {
+      aiService.setApiKey(openrouter); // Hot swap
+    }
+  }
   event.reply('settings-saved');
 });
 

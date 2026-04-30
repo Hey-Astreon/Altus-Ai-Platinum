@@ -15,24 +15,26 @@ export class QuestionDetector {
     const trimmed = text.trim().toLowerCase();
     const now = Date.now();
     
-    // Minimum length check and cooldown
-    if (trimmed.length < 15) return false;
+    // Basic safety gates
+    if (trimmed.length < 5) return false;
     if (now - this.lastTriggeredTime < this.TRIGGER_COOLDOWN) return false;
     if (trimmed === this.lastTriggeredText) return false;
 
     const questionKeywords = [
       'who', 'what', 'where', 'when', 'why', 'how', 
-      'can you', 'could you', 'would you', 'describe',
-      'explain', 'tell me', 'show me', 'give me',
-      'what is', 'how does', 'write a', 'implement a'
+      'can', 'could', 'would', 'describe', 'explain', 
+      'tell', 'show', 'give', 'write', 'implement',
+      'is', 'are', 'do', 'does', 'will', 'should', 'define'
     ];
 
     const hasQuestionMark = trimmed.includes('?');
-    const containsKeyword = questionKeywords.some(keyword => trimmed.includes(keyword));
+    const containsKeyword = questionKeywords.some(keyword => {
+      // Check if the keyword exists as a standalone word
+      const regex = new RegExp(`\\b${keyword}\\b`);
+      return regex.test(trimmed);
+    });
     
-    // Interview questions are usually longer than 5 words
-    const wordCount = trimmed.split(/\s+/).length;
-    const isLikelyQuestion = hasQuestionMark || (containsKeyword && wordCount >= 4);
+    const isLikelyQuestion = hasQuestionMark || containsKeyword;
 
     if (isLikelyQuestion) {
       this.lastTriggeredText = trimmed;

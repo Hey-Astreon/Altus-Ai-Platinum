@@ -15,7 +15,7 @@ export class AssemblyAIService extends EventEmitter {
   public connect() {
     if (this.ws) return;
 
-    const url = `wss://api.assemblyai.com/v2/realtime/ws?sample_rate=${this.sampleRate}&speaker_labels=true`;
+    const url = `wss://streaming.assemblyai.com/v3/ws?sample_rate=${this.sampleRate}&speech_model=u3-rt-pro&encoding=pcm_s16le&speaker_labels=true`;
     
     const ws = new WebSocket(url, {
       headers: {
@@ -34,14 +34,14 @@ export class AssemblyAIService extends EventEmitter {
       try {
         const response = JSON.parse(data.toString());
         
-        if (response.message_type === 'SessionBegins') {
-          console.log('[AssemblyAI] Session started:', response.session_id);
-        } else if (response.message_type === 'PartialTranscript' || response.message_type === 'FinalTranscript') {
+        if (response.type === 'Begin') {
+          console.log('[AssemblyAI] Session started:', response.id);
+        } else if (response.type === 'Turn') {
           this.emit('transcript', {
-            text: response.text,
-            isFinal: response.message_type === 'FinalTranscript',
-            confidence: response.confidence,
-            speaker: response.speaker, // ADDED: Speaker ID (e.g. A, B)
+            text: response.transcript,
+            isFinal: response.end_of_turn,
+            confidence: 1.0,
+            speaker: response.speaker_label || 'A',
           });
         } else if (response.error) {
           console.error('[AssemblyAI] Error:', response.error);
@@ -66,10 +66,7 @@ export class AssemblyAIService extends EventEmitter {
 
   public sendAudio(chunk: Buffer) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      const message = JSON.stringify({
-        audio_data: chunk.toString('base64'),
-      });
-      this.ws.send(message);
+      this.ws.send(chunk);
     }
   }
 

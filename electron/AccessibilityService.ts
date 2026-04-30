@@ -1,76 +1,100 @@
-import { exec } from 'child_process';
+import { spawn, ChildProcess } from 'child_process';
 import { EventEmitter } from 'events';
 
-/**
- * Platinum Accessibility Service
- * Uses Windows UI Automation (via PowerShell) to read text metadata from proctored windows.
- * Bypasses OS-level screen capture blackout.
- */
 export class AccessibilityService extends EventEmitter {
+  private psProcess: ChildProcess | null = null;
   private isScanning: boolean = false;
-  private scanTimer: NodeJS.Timeout | null = null;
+  private isActive: boolean = false;
   private lastExtractedText: string = '';
+  private stdoutBuffer: string = '';
 
   constructor() {
     super();
   }
 
   public start() {
-    if (this.scanTimer) return;
+    if (this.isActive) return;
+    this.isActive = true;
+    this.initGhostProcess();
     this.loop();
   }
 
-  private loop() {
-    this.scanForQuestions().finally(() => {
-      this.scanTimer = setTimeout(() => this.loop(), 5000);
+  private initGhostProcess() {
+    // Start a persistent, hidden PowerShell session
+    this.psProcess = spawn('powershell.exe', [
+      '-NoProfile',
+      '-ExecutionPolicy', 'Bypass',
+      '-Command', '-'
+    ]);
+
+    this.psProcess.stdout?.on('data', (data) => {
+      this.stdoutBuffer += data.toString();
+      if (this.stdoutBuffer.includes('__END_EXTRACT__')) {
+        const result = this.stdoutBuffer.split('__END_EXTRACT__')[0].trim();
+        this.processExtractedText(result);
+        this.stdoutBuffer = '';
+        this.isScanning = false;
+      }
     });
+
+    this.psProcess.on('exit', () => {
+      if (this.isActive) this.initGhostProcess(); // Auto-restart if it crashes
+    });
+  }
+
+  private loop() {
+    if (!this.isActive) return;
+    this.scanForQuestions();
+    setTimeout(() => this.loop(), 3000); // Higher frequency: scan every 3 seconds
   }
 
   public stop() {
-    if (this.scanTimer) {
-      clearTimeout(this.scanTimer);
-      this.scanTimer = null;
+    this.isActive = false;
+    if (this.psProcess) {
+      this.psProcess.kill();
+      this.psProcess = null;
     }
   }
 
-  private async scanForQuestions(): Promise<void> {
-    if (this.isScanning) return;
+  private scanForQuestions() {
+    if (this.isScanning || !this.psProcess) return;
     this.isScanning = true;
 
-    return new Promise((resolve) => {
-      const psScript = `
-        Add-Type -AssemblyName UIAutomationClient
-        Add-Type -AssemblyName UIAutomationTypes
-        $msb = Get-Process | Where-Object { $_.ProcessName -like "*Diagnostic*" -or $_.ProcessName -like "*Mettl*" -or $_.MainWindowTitle -like "*Secure Browser*" } | Select-Object -First 1
-        if ($msb) {
-          $element = [Windows.Automation.AutomationElement]::FromHandle($msb.MainWindowHandle)
-          $condition = [Windows.Automation.Condition]::TrueCondition
-          $children = $element.FindAll([Windows.Automation.TreeScope]::Descendants, $condition)
-          $output = ""
-          foreach ($child in $children) {
-            $name = $child.Current.Name
-            if ($name -and $name.Length -gt 15) { $output += $name + " [SEP] " }
-          }
-          Write-Output $output
+    // Hyper-fast traversal script
+    const psScript = `
+      Add-Type -AssemblyName UIAutomationClient
+      Add-Type -AssemblyName UIAutomationTypes
+      $target = Get-Process | Where-Object { $_.ProcessName -like "*Diagnostic*" -or $_.ProcessName -like "*Mettl*" -or $_.MainWindowTitle -like "*Secure Browser*" -or $_.ProcessName -like "*Notepad*" } | Select-Object -First 1
+      if ($target) {
+        $element = [Windows.Automation.AutomationElement]::FromHandle($target.MainWindowHandle)
+        $children = $element.FindAll([Windows.Automation.TreeScope]::Descendants, [Windows.Automation.Condition]::TrueCondition)
+        foreach ($child in $children) {
+          $name = $child.Current.Name
+          if ($name -and $name.Length -gt 20) { Write-Host -NoNewline "$name [SEP] " }
         }
-      `.replace(/\s+/g, ' ').trim();
+      }
+      Write-Host "__END_EXTRACT__"
+    `.replace(/\s+/g, ' ').trim() + "\n";
 
-      exec(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${psScript}"`, 
-        { timeout: 4000 }, // Kill the PS process if it hangs > 4s
-        (error, stdout) => {
-        this.isScanning = false;
-        if (error || !stdout) {
-          resolve(); 
-          return;
-        }
+    this.psProcess.stdin?.write(psScript);
+  }
 
-        const rawText = stdout.trim();
-        if (rawText && rawText !== this.lastExtractedText) {
-          this.lastExtractedText = rawText;
-          this.emit('question-detected', rawText);
-        }
-        resolve();
-      });
-    });
+  private processExtractedText(rawText: string) {
+    if (!rawText) return;
+
+    // Advanced heuristics to detect question changes while ignoring clocks/IDs
+    const cleanRaw = rawText.replace(/\d/g, '').toLowerCase();
+    const cleanLast = this.lastExtractedText.replace(/\d/g, '').toLowerCase();
+    
+    if (Math.abs(cleanRaw.length - cleanLast.length) > 40 || this.checkEdgeDrift(cleanRaw, cleanLast)) {
+      this.lastExtractedText = rawText;
+      this.emit('question-detected', rawText);
+    }
+  }
+
+  private checkEdgeDrift(a: string, b: string): boolean {
+    if (a.length < 100 || b.length < 100) return a !== b;
+    return a.substring(0, 100) !== b.substring(0, 100) || 
+           a.substring(a.length - 100) !== b.substring(b.length - 100);
   }
 }

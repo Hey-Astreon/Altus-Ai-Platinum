@@ -54,7 +54,7 @@ const App: React.FC = () => {
     // Listen for transcripts from main process
     const cleanups = [
       api.onTranscript((data: { text: string, isFinal: boolean }) => {
-        if (data.isFinal) {
+        if (data.isFinal && data.text.trim()) {
           setTranscript(prev => [...prev.slice(-10), data.text]);
         }
       }),
@@ -87,8 +87,14 @@ const App: React.FC = () => {
       }),
 
       api.onSettings(() => setShowSettings(true)),
-      api.onSettingsStatus((data: { hasKeys: boolean, opacity: number, selectedModel?: string, selectedDeviceId?: string, hotkeys?: any }) => {
+      api.onSettingsStatus((data: { hasKeys: boolean, opacity: number, assemblyKey?: string, openRouterKey?: string, selectedModel?: string, selectedDeviceId?: string, hotkeys?: any }) => {
         setHasKeys(data.hasKeys);
+        if (data.assemblyKey || data.openRouterKey) {
+          setTempKeys({
+            assembly: data.assemblyKey || '',
+            openrouter: data.openRouterKey || ''
+          });
+        }
         if (data.opacity) setAppOpacity(data.opacity);
         if (data.selectedModel) setSelectedModel(data.selectedModel);
         if (data.selectedDeviceId) setSelectedDevice(data.selectedDeviceId);
@@ -282,13 +288,21 @@ const App: React.FC = () => {
       return;
     }
     try {
+      getApi()?.startAudioCapture();
       // Create audio context and request mic stream
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
         sampleRate: 16000,
       });
 
+      if (audioContextRef.current.state === 'suspended') {
+        await audioContextRef.current.resume();
+      }
+
+      const audioSettings = { echoCancellation: false, noiseSuppression: false, autoGainControl: false };
       const constraints: MediaStreamConstraints = {
-        audio: selectedDevice === 'default' ? true : { deviceId: { exact: selectedDevice } }
+        audio: selectedDevice === 'default' 
+          ? audioSettings 
+          : { deviceId: { exact: selectedDevice }, ...audioSettings }
       };
       
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -352,34 +366,20 @@ const App: React.FC = () => {
           ⚠️ {error}
         </div>
       )}
-      {isCapturing && !isCalibrated && !isGhostMode && (
-        <div className="calibration-toast">
-          🎙️ Say "Hello" to calibrate your voice filter...
-        </div>
-      )}
+
       <header className={`ribbon-container ${(isCapturingVision || autoVision) ? 'vision-active' : ''}`}>
         <div className="drag-handle"></div>
         <div className="title-group">
           <h1 className="title">Altus AI</h1>
-          <span className="persona-badge" onClick={cyclePersona}>
-            {persona}
-          </span>
         </div>
         <div className="controls">
+
           <button 
-            className="control-btn" 
-            onClick={toggleProvider}
-            title={`Provider: ${provider} Mode`}
+            className={`control-btn ${isCapturing ? 'active danger' : ''}`} 
+            onClick={handleToggleCapture}
+            title={isCapturing ? 'Stop Audio Capture' : 'Start Audio Capture'}
           >
-            {provider === 'Cloud' ? <Cloud size={14} color="var(--accent-cyan)" /> : <Server size={14} color="var(--accent-violet)" />}
-          </button>
-          <button 
-            className={`mode-btn ${aiMode.toLowerCase()}`} 
-            onClick={toggleMode}
-            title={`Switch to ${aiMode === 'Turbo' ? 'Genius' : 'Turbo'}`}
-          >
-            {aiMode === 'Turbo' ? <Zap size={14} /> : <Brain size={14} />}
-            {aiMode}
+            <Mic size={16} color={isCapturing ? '#ff4d4d' : 'white'} />
           </button>
           <button 
             className={`control-btn ${autoVision ? 'active' : ''}`} 
@@ -486,27 +486,7 @@ const App: React.FC = () => {
                 </select>
               </div>
 
-              <div className="input-group">
-                <label><Layers size={12}/> Intelligence Core</label>
-                <div className="model-dash-list">
-                  {MODEL_REGISTRY.map(m => (
-                    <div 
-                      key={m.id} 
-                      className={`model-card ${selectedModel === m.id ? 'active' : ''}`}
-                      onClick={() => handleModelChange(m.id)}
-                    >
-                      <div className="model-header">
-                        <span className="model-name">{m.name}</span>
-                        <span className="model-cost">{m.cost}</span>
-                      </div>
-                      <div className="model-info">
-                        <span>{m.power}</span>
-                        <span>{m.usage}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+
 
               <div className="input-group">
                  <label>Hardware Hotkeys</label>
@@ -600,8 +580,8 @@ const App: React.FC = () => {
               <span>Auto-Vision: {autoVision ? 'Linked' : 'Off'}</span>
             </div>
             <div className="status-item active">
-              <MessageSquare size={12} />
-              <span>LLM: {aiMode}</span>
+              <Brain size={12} />
+              <span>AI Engine: Autonomous</span>
             </div>
             <div className={`status-item ${isCamouflaged ? 'active' : ''}`}>
               <Shield size={12} color={isCamouflaged ? '#ff4d4d' : undefined} />

@@ -26,8 +26,13 @@ export class Exporter {
     });
 
     if (filePath) {
-      fs.writeFileSync(filePath, content, 'utf8');
-      return true;
+      try {
+        fs.writeFileSync(filePath, content, 'utf8');
+        return true;
+      } catch (err) {
+        console.error('[Exporter] Failed to write file:', err);
+        return false;
+      }
     }
     return false;
   }

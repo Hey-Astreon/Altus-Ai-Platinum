@@ -1,13 +1,16 @@
 import axios from 'axios';
 
-// Fast, cheap model strictly for summarizing context in the background
-const COMPRESSION_MODEL = 'google/gemini-flash-1.5-8b';
+// Fast, free model strictly for summarizing context in the background
+// NOTE: gemini-flash-1.5-8b was returning 404 (deprecated). Using llama free tier instead.
+const COMPRESSION_MODEL = 'openrouter/auto';
 
 export class MemoryManager {
   private apiKey: string;
   private shortTermHistory: { role: 'user' | 'assistant' | 'system', content: string | any[] }[] = [];
   private semanticSummary: string = '';
   private isCompressing: boolean = false;
+  private compressionFailures: number = 0;        // NEW: track consecutive failures
+  private readonly MAX_FAILURES = 3;              // NEW: disable compression after 3 failures
   
   // Keep the last 6 messages (3 Q&A pairs) verbatim
   private readonly VERBATIM_LIMIT = 6;
@@ -27,28 +30,24 @@ export class MemoryManager {
   }
 
   public addInteraction(userMsg: any, assistantContent: string) {
-    this.shortTermHistory.push(userMsg);
-    this.shortTermHistory.push({ role: 'assistant', content: assistantContent });
-    this.triggerCompressionLoop();
+    // SPEED MODE: History disabled for real-time voice interviews.
+    // Each question is independent — no context bloat, maximum speed.
   }
 
   public getContext(systemPrompt: string): any[] {
-    const context: any[] = [];
-    context.push({ role: 'system', content: systemPrompt });
-    
-    if (this.semanticSummary) {
-      context.push({ 
-        role: 'system', 
-        content: `PREVIOUS INTERVIEW CONTEXT MEMORY: ${this.semanticSummary}` 
-      });
-    }
-
-    context.push(...this.shortTermHistory);
-    return context;
+    // SPEED MODE: Only system prompt, no history.
+    // Keeps every API call minimal and guarantees 2-3 second responses.
+    return [{ role: 'system', content: systemPrompt }];
   }
 
   private async triggerCompressionLoop() {
-    if (this.isCompressing || this.shortTermHistory.length <= this.VERBATIM_LIMIT) return;
+    // Safety gates: don't compress if already compressing, not enough history, or too many failures
+    if (this.isCompressing) return;
+    if (this.shortTermHistory.length <= this.VERBATIM_LIMIT) return;
+    if (this.compressionFailures >= this.MAX_FAILURES) {
+      // Silently skip — compression is broken for this session (bad API key or quota)
+      return;
+    }
 
     this.isCompressing = true;
 
@@ -94,6 +93,7 @@ Assistant: ${aText}`;
         {
           model: COMPRESSION_MODEL,
           messages: [{ role: 'system', content: prompt }],
+          max_tokens: 1000,
           stream: false
         },
         {
@@ -108,16 +108,21 @@ Assistant: ${aText}`;
 
       if (response.data?.choices && response.data.choices[0]?.message?.content) {
         this.semanticSummary = response.data.choices[0].message.content.trim();
-        console.log('[MemoryManager] Successfully compressed context. New Summary size:', this.semanticSummary.length);
+        this.compressionFailures = 0; // reset on success
+        console.log('[MemoryManager] Context compressed. Summary size:', this.semanticSummary.length);
       }
     } catch (err: any) {
-      console.error('[MemoryManager] Compression failure. Will try again on next loop.', err?.message);
-      // Put them back at the top so we don't lose them!
+      this.compressionFailures++;
+      console.error(`[MemoryManager] Compression failure (${this.compressionFailures}/${this.MAX_FAILURES}).`, err?.message);
+      // Put them back so we don't lose the conversation
       this.shortTermHistory.unshift(...agingContext);
+      if (this.compressionFailures >= this.MAX_FAILURES) {
+        console.warn('[MemoryManager] Max failures reached. Compression disabled for this session.');
+      }
     } finally {
       this.isCompressing = false;
-      // Loop recursively in case there was a massive backlog
-      if (this.shortTermHistory.length > this.VERBATIM_LIMIT) {
+      // Only recurse if there's a backlog AND compression is still healthy
+      if (this.shortTermHistory.length > this.VERBATIM_LIMIT && this.compressionFailures < this.MAX_FAILURES) {
         this.triggerCompressionLoop();
       }
     }

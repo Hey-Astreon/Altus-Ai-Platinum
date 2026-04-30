@@ -61,7 +61,6 @@ body {
 
 .app-wrapper.ghost-mode .title,
 .app-wrapper.ghost-mode .control-btn,
-.app-wrapper.ghost-mode .persona-badge,
 .app-wrapper.ghost-mode .pulse {
   display: none !important;
 }
@@ -131,25 +130,7 @@ body {
   text-transform: uppercase;
 }
 
-.persona-badge {
-  font-size: 0.6rem;
-  font-weight: 700;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2px 10px;
-  border-radius: 4px;
-  color: var(--gh-text);
-  border: 1px solid var(--gh-border);
-  cursor: pointer;
-  text-transform: uppercase;
-  -webkit-app-region: no-drag;
-  transition: all 0.2s ease;
-}
 
-.persona-badge:hover {
-  border-color: var(--neon-white);
-  color: var(--neon-white);
-  box-shadow: var(--neon-glow);
-}
 
 .controls {
   display: flex;
@@ -182,6 +163,17 @@ body {
 
 .control-btn:active {
   transform: scale(0.92); /* Mechanical click feel */
+}
+
+/* ADD THE V3 GLOW EFFECTS */
+.autonomous-glow {
+  color: #00f2ff !important;
+  text-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+  border-color: rgba(0, 242, 255, 0.3) !important;
+}
+
+.autonomous-glow svg {
+  filter: drop-shadow(0 0 3px #00f2ff);
 }
 
 .control-btn.active {
@@ -727,4 +719,16 @@ select option {
   opacity: 0.4;
 }
 
-
+/* V3 AUTONOMOUS ENGINE EFFECTS */
+.autonomous-glow {
+  color: #00f2ff !important;
+  text-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+}
+.autonomous-glow svg {
+  filter: drop-shadow(0 0 3px #00f2ff);
+  animation: brain-pulse 4s infinite ease-in-out;
+}
+@keyframes brain-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}

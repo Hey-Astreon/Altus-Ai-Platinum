@@ -42,7 +42,7 @@ export class StealthService extends EventEmitter {
   }
 
   private scanForThreats() {
-    exec('tasklist /NH', (error, stdout) => {
+    exec('tasklist /NH', { timeout: 2000 }, (error, stdout) => {
       if (error) return;
 
       const runningProcesses = stdout.toLowerCase();

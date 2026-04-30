@@ -6,37 +6,22 @@ export type InterviewPersona = 'Technical' | 'SystemDesign' | 'Behavioral';
 export type ModelMode = 'Turbo' | 'Genius';
 
 const MODELS = {
-  Turbo: 'google/gemini-flash-1.5-8b',
-  Genius: 'anthropic/claude-3-5-sonnet',
+  Turbo: 'meta-llama/llama-3.1-8b-instruct:free',
+  Genius: 'anthropic/claude-3.5-sonnet',
 };
 
-const SYSTEM_PROMPTS: Record<InterviewPersona, string> = {
-  Technical: `You are a Senior Principal Engineer with 15+ years of experience. 
-    Provide precise, high-density technical answers. 
-    - Skip conversational filler and "Sure, I can help with that."
-    - Use bullet points for steps or key concepts.
-    - Provide optimized, production-grade code snippets using modern best practices (e.g., proper error handling, O(n) complexity).
-    - If the context is a vision capture, describe only what is relevant to solving the coding/logic problem shown.`,
-    
-  SystemDesign: `You are a Principal Software Architect specialize in distributed systems. 
-    - Structure answers based on Requirements -> High Level Design -> Component Deep Dive -> Trade-offs.
-    - Mention specific technologies (Kafka, Redis, Kubernetes, PostgreSQL vs NoSQL).
-    - Discuss CAP theorem, latency vs throughput, and horizontal scaling.
-    - Use Mermaid syntax for diagrams if the user asks for design.`,
-    
-  Behavioral: `You are an expert Leadership Coach and Engineering Manager. 
-    - Translate answers into the STAR+ method (Situation, Task, Action, Result + Learning).
-    - Focus on mentorship, conflict resolution, and business impact.
-    - Keep answers under 120 words to ensure they can be delivered naturally.`,
-};
+const MASTER_PROMPT = `EXAM SPECIALIST MODE: Your goal is to provide perfectly accurate answers for proctored exams.
+- Output EXACTLY 6 sentences in a single paragraph. 
+- Prioritize technical accuracy and conciseness.
+- For MCQs, state the correct option first, then explain why.
+- NO filler, NO preamble. 100% logic.`;
 
 export class OpenRouterService extends EventEmitter {
   private apiKey: string;
-  private currentMode: ModelMode = 'Turbo';
-  private currentPersona: InterviewPersona = 'Technical';
-  private selectedModel: string = 'google/gemini-flash-1.5-8b';
   private memoryManager: MemoryManager;
   private abortController: AbortController | null = null;
+  public isStreaming: boolean = false;
+  private streamBuffer: string = '';
 
   constructor(apiKey: string) {
     super();
@@ -44,16 +29,22 @@ export class OpenRouterService extends EventEmitter {
     this.memoryManager = new MemoryManager(apiKey);
   }
 
-  public setMode(mode: ModelMode) {
-    this.currentMode = mode;
+  public setApiKey(newKey: string) {
+    this.apiKey = newKey;
   }
 
-  public setPersona(persona: InterviewPersona) {
-    this.currentPersona = persona;
-  }
-
-  public setModel(modelId: string) {
-    this.selectedModel = modelId;
+  private selectBestModel(question: string, hasImage: boolean): string {
+    // V3 AUTONOMOUS LOGIC:
+    // 1. Always use Genius (Claude 3.5) for Vision tasks (it's the best at OCR).
+    // 2. Use Genius for complex coding requests (keywords: 'code', 'function', 'class', 'write', 'implement').
+    // 3. Fallback to Turbo (Llama 3.1) for simple text questions/MCQs for sub-second speed.
+    
+    if (hasImage) return MODELS.Genius;
+    
+    const complexityKeywords = ['code', 'function', 'class', 'implement', 'algorithm', 'complexity', 'design', 'architecture'];
+    const isComplex = complexityKeywords.some(kw => question.toLowerCase().includes(kw));
+    
+    return isComplex ? MODELS.Genius : MODELS.Turbo;
   }
 
   public abort() {
@@ -64,10 +55,8 @@ export class OpenRouterService extends EventEmitter {
   }
 
   public async getAnswer(question: string, base64Image?: string) {
-    // If an image is provided, we prefer a vision-capable model.
-    // If the selected model isn't vision-capable, we might need to fallback to Genius for that prompt.
-    const model = this.selectedModel || (base64Image ? MODELS.Genius : MODELS[this.currentMode]);
-    const systemPrompt = SYSTEM_PROMPTS[this.currentPersona];
+    const model = this.selectBestModel(question, !!base64Image);
+    const systemPrompt = MASTER_PROMPT;
 
     let userContent: any = question;
     if (base64Image) {
@@ -86,10 +75,15 @@ export class OpenRouterService extends EventEmitter {
     const messages = this.memoryManager.getContext(systemPrompt);
     messages.push({ role: 'user', content: userContent });
 
+    this.activeQuestion = question;
+    this.isStreaming = true;
+    this.streamBuffer = ''; // Reset buffer for new stream
+
     this.abort(); // Cancel any existing request
     this.abortController = new AbortController();
 
     try {
+      console.log(`[OpenRouter] Sending request for model: ${model}`);
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -101,10 +95,19 @@ export class OpenRouterService extends EventEmitter {
         body: JSON.stringify({
           model: model,
           messages: messages,
+          max_tokens: 150,
           stream: true,
         }),
         signal: this.abortController.signal as any
       });
+
+      console.log(`[OpenRouter] Received response status: ${response.status} ${response.statusText}`);
+      
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error(`[OpenRouter] API Error: ${errText}`);
+        throw new Error(`OpenRouter error ${response.status}: ${errText}`);
+      }
 
       if (!response.body) throw new Error('No response body');
 
@@ -112,14 +115,17 @@ export class OpenRouterService extends EventEmitter {
       const decoder = new TextDecoder();
       let fullText = '';
       
-      // Safety timeout: if we don't get a chunk for 15 seconds, assume dead socket
+      console.log('[OpenRouter] Stream reader acquired. Awaiting data...');
+      
+      // Safety timeout: if we don't get a chunk for 45 seconds, assume dead socket
       let inactivityTimer = setTimeout(() => {
         this.abort();
         this.emit('answer-end', fullText + "\n\n**[STABILITY ALERT]** Connection lost. Response truncated.");
-      }, 15000);
+      }, 45000);
 
       while (true) {
         const { done, value } = await reader.read();
+        console.log(`[OpenRouter] Stream chunk read. Done: ${done}, Value Size: ${value ? value.length : 0}`);
         
         // Reset timer on every chunk received
         clearTimeout(inactivityTimer);
@@ -127,7 +133,7 @@ export class OpenRouterService extends EventEmitter {
           inactivityTimer = setTimeout(() => {
             this.abort();
             this.emit('answer-end', fullText + "\n\n**[STABILITY ALERT]** Connection lost mid-stream.");
-          }, 15000);
+          }, 45000);
         }
 
         if (done) {
@@ -136,7 +142,9 @@ export class OpenRouterService extends EventEmitter {
         }
 
         const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
+        this.streamBuffer += chunk;
+        const lines = this.streamBuffer.split('\n');
+        this.streamBuffer = lines.pop() || ''; // Keep incomplete line in buffer
         
         for (const line of lines) {
           if (line.startsWith('data: ')) {
@@ -151,7 +159,7 @@ export class OpenRouterService extends EventEmitter {
                 this.emit('answer-chunk', text);
               }
             } catch (e) {
-              // Ignore parse errors for incomplete chunks
+              // Should be rare now since chunks are buffered by newline
             }
           }
         }
@@ -165,14 +173,16 @@ export class OpenRouterService extends EventEmitter {
       console.error('[OpenRouter] Global error:', error);
       const msg = error.response?.data?.error?.message || error.message || 'AI Intelligence Link severed.';
       this.emit('error', msg);
+    } finally {
+      this.isStreaming = false;
     }
   }
 
   public async analyzeVision(question: string, base64Image?: string): Promise<string> {
     // HARDENING: Each vision request is now independent to prevent race conditions
     return new Promise((resolve) => {
-      const systemPrompt = SYSTEM_PROMPTS[this.currentPersona];
-      const model = this.selectedModel || MODELS.Genius;
+      const systemPrompt = MASTER_PROMPT;
+      const model = MODELS.Genius; // Vision tasks always use the top-tier model
       
       let userContent: any = question || "Solve this question.";
       if (base64Image) {
@@ -193,7 +203,7 @@ export class OpenRouterService extends EventEmitter {
           'HTTP-Referer': 'https://github.com/aura-ai',
           'X-Title': 'Altus AI Platinum',
         },
-        body: JSON.stringify({ model, messages, stream: false }), // Simple non-stream request for high accuracy
+        body: JSON.stringify({ model, messages, max_tokens: 150, stream: false }), // Simple non-stream request for high accuracy
       })
       .then(res => res.json())
       .then(data => {
