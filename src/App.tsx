@@ -154,7 +154,16 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-...
+    // Initial State: Hologram Mode (Click-through)
+    const timer = setTimeout(() => {
+      const api = getApi();
+      if (api && api.setIgnoreMouse) api.setIgnoreMouse(true, { forward: true });
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!isReady) return null;
+
   return (
     <div className="app-wrapper">
       <header className="ribbon-container" onMouseEnter={onRibbonEnter} onMouseLeave={onRibbonLeave}>
