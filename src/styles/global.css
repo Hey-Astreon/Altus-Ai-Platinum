@@ -17,12 +17,12 @@ body {
   color: var(--ghost-text);
   overflow: hidden;
   height: 100vh;
+  cursor: default; /* PURGE FANCY CURSORS */
 }
 
 .app-wrapper {
   height: 100vh;
-  width: 100%; /* FOLLOW WINDOW WIDTH */
-  max-width: 450px; /* LOCK MAX WIDTH */
+  width: 450px; /* LOCK WIDTH FOR STABILITY */
   margin: 0 auto;
   padding: 8px;
   display: flex;
@@ -50,7 +50,7 @@ body {
 }
 
 .drag-region {
-  cursor: grab;
+  -webkit-app-region: drag; /* NATIVE HARDWARE DRAG */
   height: 100%;
   display: flex;
   align-items: center;
@@ -58,12 +58,11 @@ body {
   flex: 1;
 }
 
-.drag-region:active { cursor: grabbing; }
-
 .control-pod { 
   display: flex; 
   gap: 4px; 
   align-items: center; 
+  -webkit-app-region: no-drag; 
 }
 
 .control-pod:last-child { justify-content: flex-end; }
@@ -119,6 +118,7 @@ body {
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   transition: all 0.1s;
+  -webkit-app-region: no-drag;
 }
 
 .control-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
@@ -199,6 +199,7 @@ body {
   box-shadow: 0 20px 80px rgba(0, 0, 0, 1);
   transform: translateY(-110%);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-app-region: no-drag;
 }
 
 .obsidian-drawer.open { transform: translateY(0); }

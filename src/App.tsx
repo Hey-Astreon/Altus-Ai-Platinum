@@ -6,8 +6,7 @@ import {
   Shield, 
   ChevronRight,
   X,
-  Zap,
-  Move
+  Zap
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
@@ -27,7 +26,6 @@ const App: React.FC = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   
   const [tempKeys, setTempKeys] = useState({ openrouter: '' });
-  const [isDragging, setIsDragging] = useState(false);
   const answerEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,32 +67,11 @@ const App: React.FC = () => {
       }
     }, 50);
 
-    // MAGNET DRAG ENGINE: State-Locked Tracking
-    const handleGlobalDrag = (e: MouseEvent) => {
-      if (isDragging) {
-        getApi().send('move-window', { x: e.movementX, y: e.movementY });
-      }
-    };
-
-    const handleGlobalMouseUp = () => {
-      setIsDragging(false);
-      const api = getApi();
-      // Restore hologram mode if settings are closed
-      if (api && api.setIgnoreMouse && !showSettings) {
-         api.setIgnoreMouse(true, { forward: true });
-      }
-    };
-
-    window.addEventListener('mousemove', handleGlobalDrag);
-    window.addEventListener('mouseup', handleGlobalMouseUp);
-
     return () => {
       clearInterval(checkApi);
       cleanups.forEach(fn => fn());
-      window.removeEventListener('mousemove', handleGlobalDrag);
-      window.removeEventListener('mouseup', handleGlobalMouseUp);
     };
-  }, [isDragging, showSettings]);
+  }, []);
 
   useEffect(() => {
     answerEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -152,7 +129,7 @@ const App: React.FC = () => {
   };
 
   const onRibbonLeave = () => {
-    if (showSettings || isDragging) return;
+    if (showSettings) return;
     const api = getApi();
     if (api && api.setIgnoreMouse) api.setIgnoreMouse(true, { forward: true });
   };
@@ -163,16 +140,8 @@ const App: React.FC = () => {
   };
 
   const onDrawerLeave = () => {
-    if (isDragging) return;
     const api = getApi();
     if (api && api.setIgnoreMouse) api.setIgnoreMouse(true, { forward: true });
-  };
-
-  const onDragStart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-    const api = getApi();
-    if (api && api.setIgnoreMouse) api.setIgnoreMouse(false); // Make solid while dragging
   };
 
   useEffect(() => {
@@ -201,9 +170,9 @@ const App: React.FC = () => {
           </button>
         </div>
 
-        {/* CENTER BRANDING (The Magnet Handle) */}
-        <div className="branding-pod drag-region" onMouseDown={onDragStart} style={{cursor: isDragging ? 'grabbing' : 'grab'}} title="Click and Hold to Move">
-          <div className={`system-heartbeat ${autoVision ? 'auto-pilot' : ''} ${updateAvailable ? 'update-available' : ''}`}></div>
+        {/* CENTER BRANDING: Native Native OS Drag Region */}
+        <div className="branding-pod drag-region" title="Drag to Move">
+          <div className="system-heartbeat"></div>
           <h1 className="title">ALTUS AI</h1>
         </div>
         
