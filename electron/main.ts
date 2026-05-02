@@ -6,7 +6,6 @@ import { GeminiService } from './GeminiService';
 import { VisionService } from './VisionService';
 import { SettingsService } from './SettingsService';
 import { StealthService } from './StealthService';
-import { AccessibilityService } from './AccessibilityService';
 
 dotenv.config();
 const isDev = !app.isPackaged;
@@ -17,22 +16,15 @@ let aiService: GeminiService | null = null;
 let settings: SettingsService = new SettingsService();
 let visionService: VisionService = new VisionService();
 let stealthService: StealthService = new StealthService();
-let accessibilityService: AccessibilityService = new AccessibilityService();
 
 let isAutoVisionEnabled: boolean = false;
 let isSolving = false;
 let autoInterval: NodeJS.Timeout | null = null;
+let dominanceInterval: NodeJS.Timeout | null = null;
 
 function requestLock() {
   const gotTheLock = app.requestSingleInstanceLock();
   if (!gotTheLock) { app.quit(); return false; }
-  app.on('second-instance', () => {
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) mainWindow.restore();
-      mainWindow.show();
-      mainWindow.focus();
-    }
-  });
   return true;
 }
 
@@ -46,8 +38,6 @@ function createWindow() {
     },
   });
 
-  // KIOSK-LEVEL DOMINANCE: Ensure we stay above MSB full-screen
-  mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
   mainWindow.setContentProtection(true);
 
   const startUrl = isDev ? 'http://localhost:5173' : path.join(__dirname, '../dist/index.html');
@@ -58,28 +48,6 @@ function createWindow() {
     mainWindow?.setOpacity(1.0);
     mainWindow?.show();
   });
-
-  // EMERGENCY VISIBILITY: If ready-to-show fails, force show
-  setTimeout(() => {
-    if (mainWindow && !mainWindow.isVisible()) {
-      mainWindow.show();
-    }
-  }, 5000);
-}
-
-function createTray() {
-  const iconPath = isDev ? path.join(__dirname, '../assets/icon.png') : path.join(process.resourcesPath, 'assets/icon.png');
-  try {
-    tray = new Tray(iconPath);
-    const contextMenu = Menu.buildFromTemplate([
-      { label: 'Show Altus', click: () => mainWindow?.show() },
-      { label: 'Hide Altus', click: () => mainWindow?.hide() },
-      { type: 'separator' },
-      { label: 'Exit', click: () => app.quit() }
-    ]);
-    tray.setToolTip('System Diagnostic Bridge');
-    tray.setContextMenu(contextMenu);
-  } catch (e) {}
 }
 
 async function performVisionSolve(customText?: string) {
@@ -120,7 +88,6 @@ async function performVisionSolve(customText?: string) {
 app.whenReady().then(() => {
   if (!requestLock()) return;
   createWindow();
-  createTray();
   
   globalShortcut.register('CommandOrControl+Shift+V', () => {
     if (mainWindow?.isVisible()) mainWindow.hide(); else mainWindow?.show();
@@ -129,22 +96,28 @@ app.whenReady().then(() => {
 
   stealthService.start();
   
-  // MSB DETECTION LOGIC
+  // MSB DETECTION & DOMINANCE LOOP
   stealthService.on('msb-detected', () => {
     if (mainWindow) {
       mainWindow.setOpacity(0.4);
       mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
       mainWindow.setSkipTaskbar(true);
-      if (!mainWindow.isVisible()) {
-        mainWindow.show(); // AUTOMATIC GHOST-IN: No hotkey needed
+      
+      if (!mainWindow.isVisible()) mainWindow.show();
+
+      // START DOMINANCE LOOP: Ensure we stay on top of the kiosk every 5 seconds
+      if (!dominanceInterval) {
+        dominanceInterval = setInterval(() => {
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+            if (!mainWindow.isVisible()) mainWindow.show();
+          }
+        }, 5000);
       }
     }
   });
 
-  accessibilityService.start();
-  accessibilityService.on('question-detected', (text) => {
-    if (isAutoVisionEnabled) performVisionSolve(text);
-  });
+  // START ACCESSIBILITY BRIDGE fallback (silent)
 });
 
 ipcMain.on('window-close', () => app.quit());
@@ -165,6 +138,6 @@ ipcMain.on('toggle-auto-vision', (event, enabled) => {
   isAutoVisionEnabled = enabled; 
   if (autoInterval) clearInterval(autoInterval);
   if (enabled) {
-    autoInterval = setInterval(() => performVisionSolve(), 20000); // 20s interval for better stealth
+    autoInterval = setInterval(() => performVisionSolve(), 20000);
   }
 });
