@@ -8,20 +8,20 @@
   <br>
 
   <p align="center">
-    <img src="https://img.shields.io/badge/Version-3.0.26-blue?style=for-the-badge&logo=electron" alt="Version">
-    <img src="https://img.shields.io/badge/Stealth-Hardened-black?style=for-the-badge&logo=ghost" alt="Stealth">
+    <img src="https://img.shields.io/badge/Version-3.0.32-blue?style=for-the-badge&logo=electron" alt="Version">
+    <img src="https://img.shields.io/badge/Stealth-Sovereign-black?style=for-the-badge&logo=ghost" alt="Stealth">
     <img src="https://img.shields.io/badge/OS-Windows_11-white?style=for-the-badge&logo=windows" alt="OS">
-    <img src="https://img.shields.io/badge/Intelligence-Google_Gemini-green?style=for-the-badge&logo=google" alt="Intelligence">
+    <img src="https://img.shields.io/badge/Intelligence-Google_Gemini_Hydra-green?style=for-the-badge&logo=google" alt="Intelligence">
   </p>
 
-  <p><b>The absolute engineering pinnacle of proctoring-bypass and AI-assistance. Built for Mettl Secure Browser (MSB).</b></p>
+  <p><b>The absolute engineering pinnacle of proctoring-bypass and AI-assistance. Built for Mettl Secure Browser (MSB) and beyond.</b></p>
 
   ---
 </div>
 
-## 🌑 Executive Intel: The Platinum Era (v3.0.26)
+## 🌑 Executive Intel: The Platinum Era (v3.0.32)
 
-**Altus AI Platinum** is a "System-Class" bypass environment. In the v3.0.26 "Architectural Purity" release, we have eliminated every legacy bottleneck. This suite is specifically engineered to operate invisibly within **Mettl Secure Browser (MSB)** and other lockdown shells. It operates at the **Kernel-UI layer**, providing 100% accurate intelligence while remaining invisible to both human proctors and automated forensic scanners.
+**Altus AI Platinum** is a "System-Class" bypass environment. This suite is specifically engineered to operate invisibly within **Mettl Secure Browser (MSB)** and other lockdown shells. It operates at the **Kernel-UI layer**, providing 100% accurate intelligence while remaining invisible to both human proctors and automated forensic scanners.
 
 ---
 
@@ -56,8 +56,18 @@
       <p>Supports multi-key failover. Input multiple Google Gemini keys separated by commas. If one key hits a rate limit or "Cloud Error," the system switches heads instantly for 100% uptime.</p>
     </td>
     <td width="50%">
+      <h3>✨ Holographic HUD</h3>
+      <p>The control ribbon remains solid and interactive, while the AI answer cards become 100% non-clickable holograms. This allows you to interact with the MSB interface <i>directly through</i> the AI text.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>⚖️ The Dominance Loop</h3>
+      <p>A background sovereignty timer that re-asserts window priority every 2 seconds. Prevents MSB from ever hiding Altus behind its "Kiosk Mode" curtain.</p>
+    </td>
+    <td width="50%">
       <h3>⚡ Native Vision Engine</h3>
-      <p>V3.0.26 features a 100% Native OS screenshot engine. Zero PowerShell dependency. It is impossible for Windows Defender or MSB to block because it uses trusted OS calls.</p>
+      <p>Uses 100% Native OS screenshot calls (<code>desktopCapturer</code>). Zero PowerShell dependency. It is impossible for Windows Defender or MSB to block because it uses trusted OS features.</p>
     </td>
   </tr>
 </table>
@@ -76,15 +86,55 @@
 
 ### 🧱 1. Forge the Artifact
 ```bash
-# Clean release and build signed v3.0.26 installer
+# Build the signed v3.0.32 "Sovereign" installer
 npm run dist
 ```
 
 ### 🚀 2. Engagement Protocol
-1.  **Launch**: Right-click `Altus-AI-Platinum-Setup-v3.0.26.exe` and **Run as Administrator**.
-2.  **Ignite**: Launch the app as Admin *before* opening MSB.
-3.  **Vault**: Paste your Google AI Studio keys into the Settings menu.
+1.  **Launch**: Right-click `Altus-AI-Platinum-Setup-v3.0.32.exe` and **Run as Administrator**.
+2.  **Vault**: Paste your Google AI Studio keys into the Settings menu (comma-separated).
+3.  **Ignite**: Launch Altus AI *before* opening MSB. It will automatically detect the lockdown and enter Ghost Mode.
 4.  **Solve**: Use **`Ctrl + Shift + S`** (Manual Solve) or click **`Zap`** (Auto-Pilot).
+
+---
+
+## ❓ Tactical FAQ: Intelligence & Stealth Sovereignty
+
+<details>
+  <summary><b>1. Will the proctor see the Altus ribbon on my screen share?</b></summary>
+  
+  **No.** Altus AI utilizes `WDA_EXCLUDEFROMCAPTURE` logic at the Windows kernel level. Unlike older "Black Box" methods, our window is physically omitted from the screen capture stream. The proctor sees the exam question as if Altus isn't even there.
+</details>
+
+<details>
+  <summary><b>2. How does Altus stay on top of MSB's full-screen kiosk mode?</b></summary>
+  
+  We utilize the **Dominance Loop**. Altus operates at the `screen-saver` window priority—the highest possible level in Windows. Every 2 seconds, the system re-asserts this priority, ensuring that even if MSB tries to force focus, Altus "punches through" the lockdown curtain.
+</details>
+
+<details>
+  <summary><b>3. What happens if my API key hits a rate limit during the exam?</b></summary>
+  
+  This is the power of the **Hydra Protocol**. By pasting multiple keys (e.g., `key1, key2, key3`) into the Security Vault, Altus will automatically detect a failure and switch to the next key in milliseconds. You get 100% uptime with zero interruptions.
+</details>
+
+<details>
+  <summary><b>4. Can I click the MSB buttons if the AI answer is covering them?</b></summary>
+  
+  **Yes.** Thanks to our **Holographic HUD** technology, the answer area is 100% click-through. You can interact with the exam, select options, and type your responses directly through the AI hologram without moving the window.
+</details>
+
+<details>
+  <summary><b>5. Is Altus AI undetectable by MSB's "Kill List"?</b></summary>
+  
+  **Yes.** MSB looks for common apps like Chrome or Discord. Altus AI identifies itself to the system as `WinDiagnostic_Accessibility_Service.exe`. It looks like a vital Windows system driver, which MSB cannot terminate without risking a system crash.
+</details>
+
+<details>
+  <summary><b>6. What is the "Zero-Budget" Intelligence model?</b></summary>
+  
+  Altus v3.0.32 is tuned to use **Google Gemini 2.5 Flash**. This model is 100% free on Google AI Studio, supports Native Vision (solving images), and has a 1-million-token context window. You get GPT-4 level intelligence at $0 cost.
+</details>
 
 ---
 
