@@ -19,7 +19,6 @@ const getApi = () => (window as any).api;
 
 const App: React.FC = () => {
   const [isReady, setIsReady] = useState(false);
-  const [isCapturing, setIsCapturing] = useState(false);
   const [transcript, setTranscript] = useState<string[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [currentAnswer, setCurrentAnswer] = useState('');
@@ -31,7 +30,7 @@ const App: React.FC = () => {
   const [updateReady, setUpdateReady] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   
-  const [tempKeys, setTempKeys] = useState({ assembly: '', openrouter: '' });
+  const [tempKeys, setTempKeys] = useState({ openrouter: '' });
   const answerEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,7 +43,7 @@ const App: React.FC = () => {
         clearInterval(checkApi);
         
         api.getSettings().then((data: any) => {
-          setTempKeys({ assembly: data.assembly || '', openrouter: data.openrouter || '' });
+          setTempKeys({ openrouter: data.openrouter || '' });
           setAppOpacity(data.globalOpacity || 0.85);
           document.documentElement.style.setProperty('--app-opacity', (data.globalOpacity || 0.85).toString());
           setIsReady(true);
@@ -64,7 +63,7 @@ const App: React.FC = () => {
             setIsThinking(false);
           }),
           api.onAiError((err: string) => {
-            console.error('AI Error:', err);
+            setAnswers(prev => [...prev, `**[SYSTEM ERROR]** ${err}`]);
             setIsThinking(false);
           }),
           api.onCaptureScreen(() => {
@@ -86,25 +85,22 @@ const App: React.FC = () => {
     answerEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [answers, currentAnswer, isThinking]);
 
-  const handleToggleCapture = () => {
-    const api = getApi();
-    if (!isCapturing) {
-      api.send('start-audio-capture');
-      setIsCapturing(true);
-    } else {
-      api.send('stop-audio-capture');
-      setIsCapturing(false);
-    }
-  };
-
   const handleCapture = () => {
+    const api = getApi();
+    if (isThinking) {
+      // CANCEL LOGIC
+      api.send('abort-solve');
+      setIsThinking(false);
+      return;
+    }
     setIsThinking(true);
-    getApi().send('capture-screen');
+    api.send('capture-screen');
   };
 
   const handleToggleAutoVision = () => {
     const newState = !autoVision;
     setAutoVision(newState);
+    if (!newState) getApi().send('abort-solve'); // Stop any active solve when turning off zap
     getApi().send('toggle-auto-vision', newState);
   };
 
@@ -136,10 +132,7 @@ const App: React.FC = () => {
       <header className="ribbon-container">
         {/* LEFT POD */}
         <div className="control-pod">
-          <button className={`control-btn ${isCapturing ? 'active' : ''}`} onClick={handleToggleCapture} title="Voice Intel">
-            <Mic size={17} />
-          </button>
-          <button className="control-btn" onClick={handleCapture} title="Manual Solve">
+          <button className={`control-btn ${isThinking ? 'thinking-pulse' : ''}`} onClick={handleCapture} title="Manual Solve">
             <Eye size={17} />
           </button>
           <button className={`control-btn ${autoVision ? 'active' : ''}`} onClick={handleToggleAutoVision} title="Auto-Pilot Vision">
@@ -180,18 +173,10 @@ const App: React.FC = () => {
            
            <div className="input-group">
              <label style={{display:'flex', justifyContent:'space-between'}}>
-                Assembly AI Key
-                {tempKeys.assembly && <span style={{color: 'var(--ghost-accent)', fontSize: '0.5rem'}}>● Encrypted</span>}
+                Google Gemini Keys
+                {tempKeys.openrouter && <span style={{color: 'var(--ghost-accent)', fontSize: '0.5rem'}}>● Active Direct Link</span>}
              </label>
-             <input type="password" placeholder="••••••••••••••••" value={tempKeys.assembly} onChange={(e) => setTempKeys({...tempKeys, assembly: e.target.value})}/>
-           </div>
-
-           <div className="input-group">
-             <label style={{display:'flex', justifyContent:'space-between'}}>
-                OpenRouter Key
-                {tempKeys.openrouter && <span style={{color: 'var(--ghost-accent)', fontSize: '0.5rem'}}>● Encrypted</span>}
-             </label>
-             <input type="password" placeholder="••••••••••••••••" value={tempKeys.openrouter} onChange={(e) => setTempKeys({...tempKeys, openrouter: e.target.value})}/>
+             <input type="password" placeholder="AI Studio Key 1, Key 2..." value={tempKeys.openrouter} onChange={(e) => setTempKeys({...tempKeys, openrouter: e.target.value})}/>
            </div>
 
            <div className="input-group slider-group">

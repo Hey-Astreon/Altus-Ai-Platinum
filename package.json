@@ -1,6 +1,6 @@
 {
   "name": "altus-ai",
-  "version": "3.0.0",
+  "version": "3.0.26",
   "description": "Microsoft Windows Accessibility Bridge - Diagnostic Framework",
   "author": "Microsoft System Framework",
   "main": "dist-electron/main.js",
@@ -68,6 +68,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
     "axios": "^1.7.7",
+    "dotenv": "^17.4.2",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.8.3",
     "framer-motion": "^12.0.0",

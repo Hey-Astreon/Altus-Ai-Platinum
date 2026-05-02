@@ -105,6 +105,16 @@ body {
 .control-btn.active { color: var(--ghost-accent); }
 .control-btn.close:hover { color: #ff4d4d; }
 
+.control-btn.thinking-pulse {
+  color: var(--ghost-accent);
+  animation: thinking-glow 1s infinite ease-in-out;
+}
+
+@keyframes thinking-glow {
+  0%, 100% { filter: drop-shadow(0 0 2px var(--ghost-accent)); opacity: 0.6; }
+  50% { filter: drop-shadow(0 0 10px var(--ghost-accent)); opacity: 1; }
+}
+
 /* INSIGHT WINDOW: THE GHOST CONTAINER */
 .insight-window {
   flex: 1;
@@ -144,9 +154,17 @@ body {
 
 .answer-card.thinking {
   display: flex; align-items: center; gap: 12px;
-  color: var(--ghost-text-dim);
+  color: var(--ghost-text);
   font-size: 0.8rem;
-  background: rgba(10, 12, 16, 0.9);
+  background: rgba(10, 12, 16, 0.95);
+  border: 1px solid var(--ghost-accent);
+  box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+}
+
+.answer-card.thinking span {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 /* SETTINGS POD: THE FLOATING OVERLAY */

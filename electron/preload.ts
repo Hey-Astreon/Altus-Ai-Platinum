@@ -21,6 +21,7 @@ contextBridge.exposeInMainWorld('api', {
       'stop-audio-capture', 
       'capture-screen', 
       'toggle-auto-vision',
+      'abort-solve',
       'set-camouflage',
       'install-update'
     ];
@@ -40,6 +41,7 @@ contextBridge.exposeInMainWorld('api', {
   getSettings: () => ipcRenderer.invoke('get-settings'),
 
   // INTELLIGENCE EVENTS
+  onAiThinking: createHandler('ai-thinking'),
   onAiAnswerChunk: createHandler('ai-answer-chunk'),
   onAiAnswerEnd: createHandler('ai-answer-end'),
   onAiError: createHandler('ai-error'),

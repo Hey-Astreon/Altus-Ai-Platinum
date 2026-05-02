@@ -23,6 +23,12 @@ export class StealthService extends EventEmitter {
     'taskmgr.exe'         // Windows Task Manager (User checking processes)
   ];
 
+  private readonly MSB_SIGNATURES = [
+    'MSB.exe',
+    'SafeExamBrowser.exe',
+    'SafeExamBrowser.Service.exe'
+  ];
+
   constructor() {
     super();
   }
@@ -47,18 +53,30 @@ export class StealthService extends EventEmitter {
       if (error) return;
 
       const runningProcesses = stdout.toLowerCase();
-      let detected = false;
+      let detectedThreat = false;
+      let detectedMSB = false;
 
       for (const sig of this.THREAT_SIGNATURES) {
         if (runningProcesses.includes(sig.toLowerCase())) {
-          detected = true;
+          detectedThreat = true;
           break;
         }
       }
 
-      if (detected !== this.isThreatActive) {
-        this.isThreatActive = detected;
-        this.emit('threat-state-change', detected);
+      for (const sig of this.MSB_SIGNATURES) {
+        if (runningProcesses.includes(sig.toLowerCase())) {
+          detectedMSB = true;
+          break;
+        }
+      }
+
+      if (detectedThreat !== this.isThreatActive) {
+        this.isThreatActive = detectedThreat;
+        this.emit('threat-state-change', detectedThreat);
+      }
+
+      if (detectedMSB) {
+        this.emit('msb-detected', true);
       }
     });
   }

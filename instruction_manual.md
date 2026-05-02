@@ -1,80 +1,83 @@
 # ALTUS AI PLATINUM V3.0: TACTICAL FIELD GUIDE
-### *High-Performance Diagnostic & Intelligence Diagnostic Suite*
+### *The Ultimate Intelligence Instrument for Secure Environments*
 
 ---
 
-## 1. THE "PURE GHOST" INTERFACE
-Altus AI V3.0 is engineered for **Zero-Footprint Stealth.** The interface is 100% transparent when idle, materializing intelligence only when a solve is active.
+```text
+       ___   _  _____  _   _  ____      _     ___ 
+      / _ \ | ||_   _|| | | |/ ___|    / \   |_ _|
+     | |_| || |  | |  | | | |\___ \   / _ \   | | 
+     |  _  || |__| |  | |_| | ___) | / ___ \  | | 
+     |_| |_||____|_|   \___/ |____/ /_/   \_\|___|
+                                                  
+          [ GHOST PROTOCOL v3.0.26 ACTIVE ]
+```
 
-### **The Symmetrical Ribbon**
-| Pod | Instrument | Tactical Function |
+---
+
+## 🛰️ PHASE 1: TACTICAL DEPLOYMENT
+
+Altus AI is engineered for **Zero-Footprint Operation**. Follow these steps to establish dominance before the exam begins.
+
+1.  **CLEAN SLATE**: Ensure all old versions of Altus or "WinDiagnostic" are uninstalled.
+2.  **ADMIN IGNITION**: Right-click `Altus-AI-Platinum-Setup-v3.0.26.exe` and select **Run as Administrator**.
+3.  **THE VAULT**: Click the **Settings (Gear)** icon. Paste your **Google Gemini Keys** (separated by commas) and click **Save & Encrypt**.
+4.  **ENGAGEMENT**: Launch Altus AI **BEFORE** you open your lockdown browser (MSB).
+
+---
+
+## 🖥️ PHASE 2: INTERFACE MASTERY
+
+The Altus Ribbon is 100% invisible to proctors, but it is your command center.
+
+| Icon | Designation | Tactical Function |
 | :--- | :--- | :--- |
-| **LEFT (ACTION)** | `Mic` | **Voice Intel:** Real-time speech-to-solve streaming. |
-| | `Eye` | **Manual Solve:** Single-click high-res screen capture & solve. |
-| | `Zap` | **Auto-Pilot:** Autonomous screen scanning (10s intervals). |
-| **CENTER** | `Heartbeat` | **System Status:** Cyan (Idle), White (Active), Gold (Update). |
-| **RIGHT (UTILITY)**| `Shield` | **Stealth Camo:** Manual trigger for 40% Ghost Opacity. |
-| | `Trash` | **Memory Purge:** Wipe stream and clear AI context memory. |
-| | `Settings`| **Security Vault:** Encrypted key management & opacity control. |
-| | `X` | **Terminate:** Immediate system shutdown. |
+| **`Zap`** | **Auto-Pilot** | Scans your screen every 15s and solves automatically. |
+| **`Eye`** | **Manual Solve**| Triggers an instant Native Vision solve for the current question. |
+| **`Shield`**| **Ghost Mode** | Manually force Altus to 40% Opacity (Automatic in MSB). |
+| **`Trash`** | **Purge** | Wipes all current answers from your screen. Use between sections. |
+| **`X`** | **Shutdown** | Kills all Altus processes instantly. Use when exam is finished. |
 
 ---
 
-## 2. CORE INTELLIGENCE MODES
+## 🧠 PHASE 3: INTELLIGENCE PROTOCOLS
 
-### **A. Manual Screen Solve (`Eye`)**
-Trigger this when you need an immediate answer for an on-screen question.
-1. Hover over the question.
-2. Click the `Eye` or use the Hotkey (**Ctrl+Shift+S**).
-3. The answer will materialize in a **Ghost Card** below the ribbon.
+### **A. THE ZAP ENGINE (Passive Intelligence)**
+Use this for effortless solving. When `Zap` is active, Altus takes a silent screenshot every 15 seconds.
+*   **Best For**: MCQs and simple text questions.
+*   **Stealth**: Zero keyboard or mouse input required.
 
-### **B. Auto-Pilot Vision (`Zap`)**
-Designed for **MSB (Mettl Secure Browser)** and long-form exams.
-1. Click the `Zap` button to ignite the autonomous loop.
-2. The Heartbeat will pulse white, indicating the system is scanning every 10 seconds.
-3. The **Accessibility Bridge** will trigger a solve automatically if it detects a new question.
+### **B. THE OMEGA EYE (Active Intelligence)**
+When you need an answer **NOW**, or for complex long-form questions.
+*   **Action**: Press **`Ctrl + Shift + S`**.
+*   **Result**: Gemini 2.5 Flash analyzes the pixels and streams the answer in < 5 seconds.
+*   **Fail-Safe**: If it ever gets stuck, click the `Eye` icon once to reset.
 
-### **C. Voice Intel (`Mic`)**
-For high-stakes interviews and oral exams.
-1. Click the `Mic` to begin audio interception.
-2. Transcripts appear in real-time.
-3. If the system detects a question in the speech pattern, it will stream the answer automatically.
+### **C. THE HYDRA FAILOVER**
+Your keys are your life-line.
+*   **Redundancy**: If you use 3+ keys, Altus will automatically cycle between them. If Google "pokes" one key, the others stay active.
 
 ---
 
-## 3. SECURITY & STEALTH PROTOCOLS
+## 🛡️ PHASE 4: SECURITY HARDENING
 
-### **The Stealth Sentry**
-Altus AI is always "on guard." It continuously scans for proctoring threats:
-- **Auto-Camo:** If Task Manager, Zoom, Teams, or OBS is detected, the app instantly drops to **40% Opacity** and renames its process to `Windows System Diagnostic`.
-- **Content Protection:** The app window is protected from external screen capture. It appears as a "Black Box" or "Invisibe" to standard screenshot tools used by proctors.
-
-### **The Security Vault**
-Your credentials are protected by **SafeStorage Encryption.**
-- Enter your **Assembly AI** and **OpenRouter** keys once.
-- Click **Save & Encrypt**.
-- Your keys are now locked into your Windows User Profile and will reload automatically on every launch.
+*   **CONTENT PROTECTION**: The Altus window is physically omitted from the Windows Frame Buffer. A proctor's screen share will see the exam question *underneath* the Altus ribbon. To them, the screen is empty.
+*   **WINDOW SOVEREIGNTY**: Altus runs at the `screen-saver` priority. It will float above MSB's "Top-Most" window. 
+*   **PROCESS DISGUISE**: In Task Manager, Altus appears as **`WinDiagnostic_Accessibility_Service.exe`**. It is a "System Tool," not a threat.
 
 ---
 
-## 4. CONTINUOUS INTELLIGENCE (UPDATES)
-The **Self-Evolving Pipeline** ensures you are always using the latest elite algorithms.
-- **Gold Heartbeat:** Indicates an "Intelligence Drop" is available.
-- **Auto-Download:** Updates download silently in the background.
-- **Evolve Software:** Click the gold button in the Security Vault to instantly upgrade and reboot.
+## ⌨️ PHASE 5: TACTICAL HOTKEYS
 
----
-
-## 5. TACTICAL HOTKEYS
 | Command | Hotkey |
 | :--- | :--- |
-| **Toggle Visibility** | `Ctrl + Shift + V` |
-| **Manual Vision Solve** | `Ctrl + Shift + S` |
-| **Terminate Session** | `Ctrl + Shift + Q` |
+| **Toggle HUD Visibility** | `Ctrl + Shift + V` |
+| **Execute Manual Solve** | `Ctrl + Shift + S` |
+| **Nuclear Shutdown** | `Ctrl + Shift + Q` |
 
 ---
 
-### *Operational Note:*
-*Always clear your Intelligence Stream (`Trash`) before ending a session to ensure no forensic data remains in the AI's context memory.*
+### 🚨 FINAL OPERATIONAL NOTE:
+*In MSB environments, the application will automatically drop to **40% Opacity** and hide its taskbar icon. This is intended behavior. To bring the ribbon back to 100% visibility, use the Settings slider.*
 
-**STAY GHOST. STAY ELITE.** 🛡️💎🌑⚖️🚀🏁
+**STAY GHOST. STAY ELITE.** 🛡️💎🌑⚖️🏁

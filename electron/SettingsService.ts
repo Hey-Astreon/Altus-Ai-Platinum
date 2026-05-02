@@ -1,18 +1,6 @@
 import { safeStorage } from 'electron';
 import Store from 'electron-store';
 
-interface AuraSettings {
-  assemblyAiKey?: string;
-  openRouterKey?: string;
-  globalOpacity?: number;
-  selectedModel?: string;
-  selectedDeviceId?: string;
-  hotkeys?: {
-    toggleVisibility?: string;
-    visionCapture?: string;
-  };
-}
-
 export class SettingsService {
   private store: Store;
 
@@ -20,36 +8,35 @@ export class SettingsService {
     this.store = new Store();
   }
 
-  public saveKey(type: 'assembly' | 'openrouter', key: string) {
+  public saveKeys(keys: string[]) {
     if (!safeStorage.isEncryptionAvailable()) {
-      // Fallback if encryption is disabled (rare on Windows/Mac)
-      this.store.set(type + 'Key', key);
+      this.store.set('openrouterKeys', keys);
       return;
     }
 
-    const encrypted = safeStorage.encryptString(key).toString('base64');
-    this.store.set(type + 'Key', encrypted);
+    const encryptedKeys = keys.map(k => safeStorage.encryptString(k).toString('base64'));
+    this.store.set('openrouterKeys', encryptedKeys);
   }
 
-  public getKey(type: 'assembly' | 'openrouter'): string {
-    const data = this.store.get(type + 'Key') as string;
-    if (!data) return '';
+  public getKeys(): string[] {
+    const data = this.store.get('openrouterKeys') as string[];
+    if (!data || !Array.isArray(data)) return [];
 
     if (!safeStorage.isEncryptionAvailable()) return data;
 
-    try {
-      return safeStorage.decryptString(Buffer.from(data, 'base64'));
-    } catch (e) {
-      console.error(`[SettingsService] Failed to decrypt ${type} key:`, e);
-      return '';
-    }
+    return data.map(encrypted => {
+      try {
+        return safeStorage.decryptString(Buffer.from(encrypted, 'base64'));
+      } catch (e) {
+        return '';
+      }
+    }).filter(k => k !== '');
   }
 
   public hasKeys(): boolean {
-    return !!(this.getKey('assembly') && this.getKey('openrouter'));
+    return this.getKeys().length > 0;
   }
 
-  // Generic settings (unencrypted)
   public saveSetting(key: string, value: any) {
     this.store.set(key, value);
   }

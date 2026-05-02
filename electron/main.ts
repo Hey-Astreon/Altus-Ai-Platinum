@@ -1,269 +1,162 @@
-import { app, BrowserWindow, globalShortcut, Tray, Menu, ipcMain, screen, session, desktopCapturer } from 'electron';
+import { app, BrowserWindow, globalShortcut, Tray, Menu, ipcMain, screen, desktopCapturer } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
-import { AssemblyAIService } from './AssemblyAIService';
-import { OpenRouterService, ModelMode, InterviewPersona } from './OpenRouterService';
-import { OllamaService } from './OllamaService';
-import { QuestionDetector } from './QuestionDetector';
+import * as dotenv from 'dotenv';
+import { GeminiService } from './GeminiService';
 import { VisionService } from './VisionService';
-import { Exporter } from './Exporter';
 import { SettingsService } from './SettingsService';
 import { StealthService } from './StealthService';
 import { AccessibilityService } from './AccessibilityService';
 
+dotenv.config();
 const isDev = !app.isPackaged;
-
-// SILENT SENTRY: Suppress all forensic footprints in production
-if (!isDev) {
-  console.log = () => {};
-  console.error = () => {};
-  console.warn = () => {};
-}
 
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
-let sttService: AssemblyAIService | null = null;
-let aiService: OpenRouterService | OllamaService | null = null;
+let aiService: GeminiService | null = null;
 let settings: SettingsService = new SettingsService();
 let visionService: VisionService = new VisionService();
 let stealthService: StealthService = new StealthService();
 let accessibilityService: AccessibilityService = new AccessibilityService();
-let detector: QuestionDetector = new QuestionDetector();
 
 let isAutoVisionEnabled: boolean = false;
-let visionInterval: NodeJS.Timeout | null = null;
+let isSolving = false;
+let autoInterval: NodeJS.Timeout | null = null;
+
+function requestLock() {
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) { app.quit(); return false; }
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  });
+  return true;
+}
 
 function createWindow() {
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width, height } = primaryDisplay.workAreaSize;
-
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 800,
-    frame: false,
-    transparent: true, // ELITE: RESTORE TRANSPARENCY
-    alwaysOnTop: true,
-    skipTaskbar: true,
+    width: 800, height: 800, frame: false, transparent: true,
+    alwaysOnTop: true, skipTaskbar: true, show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: false,
-      contextIsolation: true,
+      nodeIntegration: false, contextIsolation: true,
     },
-    show: false,
   });
 
-  mainWindow.setContentProtection(true); // ELITE: RESTORE PROTECTION
-  
-  const startUrl = isDev 
-    ? 'http://localhost:5173' 
-    : `file://${path.join(__dirname, '../dist/index.html')}`;
+  // KIOSK-LEVEL DOMINANCE: Ensure we stay above MSB full-screen
+  mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+  mainWindow.setContentProtection(true);
 
-  mainWindow.loadURL(startUrl);
+  const startUrl = isDev ? 'http://localhost:5173' : path.join(__dirname, '../dist/index.html');
+  if (isDev) mainWindow.loadURL(startUrl); else mainWindow.loadFile(startUrl);
 
   mainWindow.once('ready-to-show', () => {
-    // mainWindow?.webContents.openDevTools({ mode: 'detach' }); // DIAGNOSTICS COMPLETED
     mainWindow?.center();
     mainWindow?.setOpacity(1.0);
     mainWindow?.show();
-    mainWindow?.focus();
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+  // EMERGENCY VISIBILITY: If ready-to-show fails, force show
+  setTimeout(() => {
+    if (mainWindow && !mainWindow.isVisible()) {
+      mainWindow.show();
+    }
+  }, 5000);
 }
 
-function registerShortcuts() {
-  globalShortcut.unregisterAll();
-  const hotkeys = settings.getSetting('hotkeys', {
-    toggleVisibility: 'CommandOrControl+Shift+V',
-    visionCapture: 'CommandOrControl+Shift+S'
-  });
-
+function createTray() {
+  const iconPath = isDev ? path.join(__dirname, '../assets/icon.png') : path.join(process.resourcesPath, 'assets/icon.png');
   try {
-    globalShortcut.register(hotkeys.toggleVisibility, () => {
-      if (mainWindow?.isVisible()) {
-        mainWindow.hide();
-      } else {
-        mainWindow?.show();
-      }
-    });
-    
-    globalShortcut.register(hotkeys.visionCapture, () => {
-       performVisionSolve();
-    });
-    
-    globalShortcut.register('CommandOrControl+Shift+Q', () => {
-      app.quit();
-    });
-  } catch (e) { console.error('Hotkey registration failed:', e); }
+    tray = new Tray(iconPath);
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Show Altus', click: () => mainWindow?.show() },
+      { label: 'Hide Altus', click: () => mainWindow?.hide() },
+      { type: 'separator' },
+      { label: 'Exit', click: () => app.quit() }
+    ]);
+    tray.setToolTip('System Diagnostic Bridge');
+    tray.setContextMenu(contextMenu);
+  } catch (e) {}
 }
 
 async function performVisionSolve(customText?: string) {
+  if (isSolving || !mainWindow) return;
+  isSolving = true;
+
   try {
+    let keys = settings.getKeys();
+    if (keys.length === 0 && process.env.OPENROUTER_KEY) keys = [process.env.OPENROUTER_KEY];
+    
+    if (keys.length === 0) {
+      mainWindow.webContents.send('ai-error', 'CRITICAL: No API Keys in Vault.');
+      return;
+    }
+    
     if (!aiService) {
-      const key = settings.getKey('openrouter');
-      if (key) {
-        aiService = new OpenRouterService(key);
-        bindAiEvents();
-      } else {
-        mainWindow?.webContents.send('ai-error', 'OpenRouter Key Missing');
-        return;
-      }
+      aiService = new GeminiService(keys);
+      aiService.on('answer-chunk', (chunk: string) => mainWindow?.webContents.send('ai-answer-chunk', chunk));
+      aiService.on('answer-end', (full: string) => mainWindow?.webContents.send('ai-answer-end', full));
+      aiService.on('error', (err: string) => mainWindow?.webContents.send('ai-error', err));
     }
 
-    mainWindow?.webContents.send('ai-thinking');
+    mainWindow.webContents.send('ai-thinking');
     
-    let response;
     if (customText) {
-      // Direct solve for text extracted via Accessibility Bridge
-      response = await aiService.getAnswer(customText);
+      await aiService.getAnswer(customText);
     } else {
-      // Vision solve for screen capture
       const image = await visionService.captureScreen();
-      response = await (aiService as OpenRouterService).analyzeVision('SOLVE THIS QUESTION. BE CONCISE.', image);
+      await aiService.getAnswer('Solve the exam question in this image. Be concise.', image);
     }
-    
-    if (response) {
-      mainWindow?.webContents.send('ai-answer-end', response);
-    }
-  } catch (error) {
-    mainWindow?.webContents.send('ai-error', 'Solve Failed');
+  } catch (error: any) {
+    mainWindow.webContents.send('ai-error', `System Fault: ${error.message}`);
+  } finally {
+    isSolving = false;
   }
-}
-
-function bindAiEvents() {
-  if (!aiService) return;
-  aiService.removeAllListeners();
-  aiService.on('answer-chunk', (chunk) => mainWindow?.webContents.send('ai-answer-chunk', chunk));
-  aiService.on('answer-end', (full) => mainWindow?.webContents.send('ai-answer-end', full));
-  aiService.on('error', (err) => mainWindow?.webContents.send('ai-error', err));
-}
-
-function initializeApp() {
-  createWindow();
-  registerShortcuts();
-  
-  // START STEALTH SENTRY
-  stealthService.start();
-  stealthService.on('threat-state-change', (detected) => {
-    if (detected) {
-      mainWindow?.setOpacity(0.4); // Force Ghost Mode
-      mainWindow?.setTitle('Windows System Diagnostic');
-    } else {
-      const savedOpacity = settings.getSetting('globalOpacity', 1.0);
-      mainWindow?.setOpacity(savedOpacity);
-      mainWindow?.setTitle('Altus AI');
-    }
-    mainWindow?.webContents.send('camouflage-state-change', detected);
-  });
-
-  // START ACCESSIBILITY BRIDGE (Auto-Pilot)
-  accessibilityService.start();
-  accessibilityService.on('question-detected', (text) => {
-    if (isAutoVisionEnabled) {
-      performVisionSolve(text);
-    }
-  });
 }
 
 app.whenReady().then(() => {
-  initializeApp();
+  if (!requestLock()) return;
+  createWindow();
+  createTray();
   
-  // CONFIG AUTO-UPDATER
-  autoUpdater.autoDownload = true;
-  autoUpdater.checkForUpdatesAndNotify();
+  globalShortcut.register('CommandOrControl+Shift+V', () => {
+    if (mainWindow?.isVisible()) mainWindow.hide(); else mainWindow?.show();
+  });
+  globalShortcut.register('CommandOrControl+Shift+S', () => performVisionSolve());
 
-  autoUpdater.on('update-available', () => {
-    mainWindow?.webContents.send('update-available');
+  stealthService.start();
+  
+  // MSB DETECTION LOGIC
+  stealthService.on('msb-detected', () => {
+    mainWindow?.setOpacity(0.4);
+    mainWindow?.setAlwaysOnTop(true, 'screen-saver', 1);
+    mainWindow?.setSkipTaskbar(true);
   });
 
-  autoUpdater.on('update-downloaded', () => {
-    mainWindow?.webContents.send('update-ready');
+  accessibilityService.start();
+  accessibilityService.on('question-detected', (text) => {
+    if (isAutoVisionEnabled) performVisionSolve(text);
   });
 });
 
-ipcMain.on('install-update', () => {
-  autoUpdater.quitAndInstall();
-});
-
-// IPC Handlers
-ipcMain.on('window-hide', () => mainWindow?.hide());
 ipcMain.on('window-close', () => app.quit());
-ipcMain.on('set-opacity', (event, opacity: number) => {
-  const safeOpacity = Math.max(0.4, opacity);
-  mainWindow?.setOpacity(safeOpacity);
-  settings.saveSetting('globalOpacity', safeOpacity);
-});
-
-ipcMain.handle('get-settings', () => {
-  return {
-    assembly: settings.getKey('assembly'),
-    openrouter: settings.getKey('openrouter'),
-    globalOpacity: settings.getSetting('globalOpacity', 0.85),
-    selectedDeviceId: settings.getSetting('selectedDeviceId', 'default'),
-    hotkeys: settings.getSetting('hotkeys', {
-      toggleVisibility: 'CommandOrControl+Shift+V',
-      visionCapture: 'CommandOrControl+Shift+S'
-    })
-  };
-});
-
-ipcMain.on('save-keys', (event, { assembly, openrouter }) => {
-  if (assembly) settings.saveKey('assembly', assembly);
-  if (openrouter) settings.saveKey('openrouter', openrouter);
-  sttService = null;
+ipcMain.on('abort-solve', () => { isSolving = false; aiService?.abort(); });
+ipcMain.handle('get-settings', () => ({
+  openrouter: settings.getKeys().join(', ') || process.env.OPENROUTER_KEY || '',
+  globalOpacity: 0.85
+}));
+ipcMain.on('save-keys', (event, { openrouter }) => {
+  if (openrouter) settings.saveKeys(openrouter.split(',').map((k: any) => k.trim()));
   aiService = null;
 });
-
-ipcMain.on('start-audio-capture', () => {
-  const assemblyKey = settings.getKey('assembly');
-  const openRouterKey = settings.getKey('openrouter');
-  if (!assemblyKey || !openRouterKey) return;
-
-  if (!sttService) {
-    sttService = new AssemblyAIService(assemblyKey);
-    sttService.connect();
-    sttService.on('transcript', (data) => {
-      mainWindow?.webContents.send('new-transcript', data);
-      if (data.isFinal && detector.isQuestion(data.text)) {
-        aiService?.getAnswer(data.text);
-      }
-    });
+ipcMain.on('capture-screen', () => performVisionSolve());
+ipcMain.on('toggle-auto-vision', (event, enabled) => { 
+  isAutoVisionEnabled = enabled; 
+  if (autoInterval) clearInterval(autoInterval);
+  if (enabled) {
+    autoInterval = setInterval(() => performVisionSolve(), 20000); // 20s interval for better stealth
   }
-  
-  if (!aiService) {
-    aiService = new OpenRouterService(openRouterKey);
-    bindAiEvents();
-  }
-});
-
-ipcMain.on('audio-chunk', (event, chunk: ArrayBuffer) => {
-  sttService?.sendAudio(Buffer.from(chunk));
-});
-
-ipcMain.on('stop-audio-capture', () => {
-  sttService?.disconnect();
-  sttService = null;
-});
-
-ipcMain.on('capture-screen', () => {
-  performVisionSolve();
-});
-
-ipcMain.on('toggle-auto-vision', (event, enabled: boolean) => {
-  isAutoVisionEnabled = enabled;
-  if (visionInterval) { clearInterval(visionInterval); visionInterval = null; }
-  if (isAutoVisionEnabled) {
-    visionInterval = setInterval(() => {
-      if (mainWindow && !mainWindow.isDestroyed()) performVisionSolve();
-    }, 10000); 
-  }
-});
-
-ipcMain.on('clear-stream', () => {
-  if (aiService instanceof OpenRouterService) {
-    aiService.clearMemory();
-  }
-  detector.reset();
 });
