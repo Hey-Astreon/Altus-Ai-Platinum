@@ -132,6 +132,12 @@ app.whenReady().then(() => {
 });
 
 ipcMain.on('window-close', () => app.quit());
+ipcMain.on('move-window', (event, { x, y }) => {
+  if (mainWindow) {
+    const [currX, currY] = mainWindow.getPosition();
+    mainWindow.setPosition(currX + x, currY + y);
+  }
+});
 ipcMain.on('abort-solve', () => { isSolving = false; aiService?.abort(); });
 ipcMain.on('set-ignore-mouse', (event, ignore, forward) => {
   mainWindow?.setIgnoreMouseEvents(ignore, forward);

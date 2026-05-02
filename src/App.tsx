@@ -67,9 +67,25 @@ const App: React.FC = () => {
       }
     }, 50);
 
+    // GLOBAL DRAG ENGINE: Magnet-style tracking
+    const handleGlobalDrag = (e: MouseEvent) => {
+      if (e.buttons === 1) {
+        const target = e.target as HTMLElement;
+        if (target.closest('.drag-region')) {
+          const api = getApi();
+          if (api && api.send) {
+            api.send('move-window', { x: e.movementX, y: e.movementY });
+          }
+        }
+      }
+    };
+
+    window.addEventListener('mousemove', handleGlobalDrag);
+
     return () => {
       clearInterval(checkApi);
       cleanups.forEach(fn => fn());
+      window.removeEventListener('mousemove', handleGlobalDrag);
     };
   }, []);
 
@@ -122,7 +138,6 @@ const App: React.FC = () => {
 
   const handleClose = () => getApi().send('window-close');
 
-  // HOLOGRAM CONTROL
   const onRibbonEnter = () => {
     const api = getApi();
     if (api && api.setIgnoreMouse) api.setIgnoreMouse(false);
@@ -171,7 +186,7 @@ const App: React.FC = () => {
         </div>
 
         {/* CENTER BRANDING */}
-        <div className="branding-pod drag-region" title="Hold to Move Altus">
+        <div className="branding-pod drag-region" style={{cursor: 'move'}} title="Hold to Move Altus">
           <div className={`system-heartbeat ${autoVision ? 'auto-pilot' : ''} ${updateAvailable ? 'update-available' : ''}`}></div>
           <h1 className="title">ALTUS AI</h1>
         </div>
