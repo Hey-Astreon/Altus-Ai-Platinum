@@ -3,7 +3,7 @@
 
   <br>
 
-  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&size=35&duration=3000&pause=1000&color=2D9CDB&center=true&vCenter=true&width=800&lines=ALTUS+AI+PLATINUM;THE+PHANTOM+INSTRUMENT;UNBLOCKABLE+STEALTH;ACCESSIBILITY+GHOST+ACTIVE" alt="Altus AI Typing Animation" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&size=35&duration=3000&pause=1000&color=2D9CDB&center=true&vCenter=true&width=800&lines=ALTUS+AI+PLATINUM;THE+PHANTOM+INSTRUMENT;UNBLOCKABLE+STEALTH;SOVEREIGN+HUD+ACTIVE" alt="Altus AI Typing Animation" />
 
   <br>
 
@@ -19,21 +19,37 @@
   ---
 </div>
 
-## 🌑 Executive Intel: The Platinum Era (v3.0.32)
+## 🌑 Executive Intel: The Platinum Era
 
 **Altus AI Platinum** is a "System-Class" bypass environment. This suite is specifically engineered to operate invisibly within **Mettl Secure Browser (MSB)** and other lockdown shells. It operates at the **Kernel-UI layer**, providing 100% accurate intelligence while remaining invisible to both human proctors and automated forensic scanners.
 
 ---
 
-## 🛠️ The Tech Stack (Apex Tier)
+## 🛰️ Tactical Deployment Guide (Ghost Protocol)
 
-<p align="center">
-  <img src="https://img.shields.io/badge/ELECTRON-47848F?style=for-the-badge&logo=electron&logoColor=white" alt="Electron">
-  <img src="https://img.shields.io/badge/REACT-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
-  <img src="https://img.shields.io/badge/TYPESCRIPT-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/GOOGLE_AI-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Google AI Studio">
-  <img src="https://img.shields.io/badge/WIN32_API-white?style=for-the-badge&logo=windows&logoColor=blue" alt="Win32 Native API">
-</p>
+```text
+       ___   _  _____  _   _  ____      _     ___ 
+      / _ \ | ||_   _|| | | |/ ___|    / \   |_ _|
+     | |_| || |  | |  | | | |\___ \   / _ \   | | 
+     |  _  || |__| |  | |_| | ___) | / ___ \  | | 
+     |_| |_||____|_|   \___/ |____/ /_/   \_\|___|
+                                                  
+          [ GHOST PROTOCOL v3.0.32 ACTIVE ]
+```
+
+### 1. The "Safe Passage" Exclusions (CRITICAL)
+To ensure the **Native OS Engine** is not interrupted by Windows Defender, add these three paths to **Windows Security > Exclusions**:
+*   **Installation Target**: `C:\Program Files\WinDiagnostic_Accessibility_Service`
+*   **The Ghost Morph Folder**: `%TEMP%\win_diag_cache`
+*   **The Installer Folder**: (The directory where you keep the `.exe`)
+
+### 2. Admin Ignition
+1. **CLEAN SLATE**: Ensure all old versions of Altus are uninstalled.
+2. **LAUNCH**: Right-click `Altus-AI-Platinum-Setup-v3.0.32.exe` and select **Run as Administrator**.
+3. **ENGAGEMENT**: Launch Altus AI **BEFORE** you open your lockdown browser (MSB).
+
+### 3. Intelligence Vault Setup
+Click the **Settings (Gear)** icon. Paste your **Google Gemini Keys** (separated by commas) and click **Save & Encrypt**. Altus will automatically cycle through these keys to bypass rate limits.
 
 ---
 
@@ -43,97 +59,69 @@
   <tr>
     <td width="50%">
       <h3>👻 The Accessibility Ghost</h3>
-      <p>Uses high-intensity Windows UI Automation (UIA) to "read" the code behind MSB. Bypasses screenshot blocks by extracting raw metadata directly from the browser engine nodes.</p>
+      <p>Uses high-intensity Native OS calls to "read" the screen. Bypasses screenshot blocks by extracting data directly from the system frame buffer.</p>
     </td>
     <td width="50%">
       <h3>🛡️ The Physical Shield</h3>
-      <p>Hardened with <code>setContentProtection(true)</code>. The Altus window is physically omitted from the Windows Frame Buffer, making it <b>completely invisible</b> to screen-sharing and webcam monitoring.</p>
+      <p>Hardened with <code>setContentProtection(true)</code>. The Altus window is physically omitted from screen-capture streams. Invisible to screen-sharing.</p>
     </td>
   </tr>
   <tr>
     <td width="50%">
       <h3>🐉 The Hydra Protocol</h3>
-      <p>Supports multi-key failover. Input multiple Google Gemini keys separated by commas. If one key hits a rate limit or "Cloud Error," the system switches heads instantly for 100% uptime.</p>
+      <p>Supports multi-key failover. Input multiple Google Gemini keys. If one key hits a rate limit, the system switches heads instantly for 100% uptime.</p>
     </td>
     <td width="50%">
       <h3>✨ Holographic HUD</h3>
-      <p>The control ribbon remains solid and interactive, while the AI answer cards become 100% non-clickable holograms. This allows you to interact with the MSB interface <i>directly through</i> the AI text.</p>
+      <p>The control ribbon remains interactive, while the AI answer cards become 100% non-clickable holograms. Interact with MSB <i>through</i> the text.</p>
     </td>
   </tr>
   <tr>
     <td width="50%">
       <h3>⚖️ The Dominance Loop</h3>
-      <p>A background sovereignty timer that re-asserts window priority every 2 seconds. Prevents MSB from ever hiding Altus behind its "Kiosk Mode" curtain.</p>
+      <p>A background sovereignty timer that re-asserts window priority every 2 seconds. Prevents MSB from ever hiding Altus behind its kiosk curtain.</p>
     </td>
     <td width="50%">
       <h3>⚡ Native Vision Engine</h3>
-      <p>Uses 100% Native OS screenshot calls (<code>desktopCapturer</code>). Zero PowerShell dependency. It is impossible for Windows Defender or MSB to block because it uses trusted OS features.</p>
+      <p>Uses 100% Native OS screenshot calls. Zero PowerShell dependency. Impossible for Windows Defender or MSB to block.</p>
     </td>
   </tr>
 </table>
 
 ---
 
-## 🧬 Architectural Evolution
+## 🧠 Intelligence Protocols
 
-- **Direct-to-Google:** Removed middlemen (OpenRouter) to eliminate 402/404 errors. Altus now talks directly to **Gemini 2.5 Flash** for sub-3-second solve times.
-- **Kiosk-Level Dominance:** Window priority is set to `screen-saver` (Level 1). Altus will ALWAYS stay on top of MSB's full-screen shell.
-- **Stealth Disguise:** Identifies in Task Manager as <i>WinDiagnostic Accessibility Service</i>. It leaves zero forensic footprint in the Windows Certificate Store.
-
----
-
-## 🛰️ Final Deployment Workflow
-
-### 🧱 1. Forge the Artifact
-```bash
-# Build the signed v3.0.32 "Sovereign" installer
-npm run dist
-```
-
-### 🚀 2. Engagement Protocol
-1.  **Launch**: Right-click `Altus-AI-Platinum-Setup-v3.0.32.exe` and **Run as Administrator**.
-2.  **Vault**: Paste your Google AI Studio keys into the Settings menu (comma-separated).
-3.  **Ignite**: Launch Altus AI *before* opening MSB. It will automatically detect the lockdown and enter Ghost Mode.
-4.  **Solve**: Use **`Ctrl + Shift + S`** (Manual Solve) or click **`Zap`** (Auto-Pilot).
+| Icon | Tactical Function | Command |
+| :--- | :--- | :--- |
+| **`Zap`** | **Auto-Pilot**: Scans and solves automatically every 20s. | Click Icon |
+| **`Eye`** | **Manual Solve**: Instant Native Vision solve for current view. | `Ctrl+Shift+S` |
+| **`Trash`**| **Purge**: Wipes all current answers from your HUD. | Click Icon |
+| **`Shield`**| **Ghost Mode**: Toggles between 100% and 40% Opacity. | Click Icon |
+| **`X`** | **Nuclear Shutdown**: Terminates all Altus processes. | `Ctrl+Shift+Q` |
 
 ---
 
-## ❓ Tactical FAQ: Intelligence & Stealth Sovereignty
+## ❓ Tactical FAQ
 
 <details>
   <summary><b>1. Will the proctor see the Altus ribbon on my screen share?</b></summary>
-  
-  **No.** Altus AI utilizes `WDA_EXCLUDEFROMCAPTURE` logic at the Windows kernel level. Unlike older "Black Box" methods, our window is physically omitted from the screen capture stream. The proctor sees the exam question as if Altus isn't even there.
+  **No.** Altus AI utilizes kernel-level omission. The proctor sees the exam question as if Altus isn't even there.
 </details>
 
 <details>
   <summary><b>2. How does Altus stay on top of MSB's full-screen kiosk mode?</b></summary>
-  
-  We utilize the **Dominance Loop**. Altus operates at the `screen-saver` window priority—the highest possible level in Windows. Every 2 seconds, the system re-asserts this priority, ensuring that even if MSB tries to force focus, Altus "punches through" the lockdown curtain.
+  We utilize the **Dominance Loop**. Altus re-asserts its <code>screen-saver</code> priority every 2 seconds to punch through the lockdown curtain.
 </details>
 
 <details>
-  <summary><b>3. What happens if my API key hits a rate limit during the exam?</b></summary>
-  
-  This is the power of the **Hydra Protocol**. By pasting multiple keys (e.g., `key1, key2, key3`) into the Security Vault, Altus will automatically detect a failure and switch to the next key in milliseconds. You get 100% uptime with zero interruptions.
+  <summary><b>3. Can I click MSB buttons through the AI answers?</b></summary>
+  **Yes.** Our **Holographic HUD** technology makes the answer area 100% click-through. Interaction is seamless.
 </details>
 
 <details>
-  <summary><b>4. Can I click the MSB buttons if the AI answer is covering them?</b></summary>
-  
-  **Yes.** Thanks to our **Holographic HUD** technology, the answer area is 100% click-through. You can interact with the exam, select options, and type your responses directly through the AI hologram without moving the window.
-</details>
-
-<details>
-  <summary><b>5. Is Altus AI undetectable by MSB's "Kill List"?</b></summary>
-  
-  **Yes.** MSB looks for common apps like Chrome or Discord. Altus AI identifies itself to the system as `WinDiagnostic_Accessibility_Service.exe`. It looks like a vital Windows system driver, which MSB cannot terminate without risking a system crash.
-</details>
-
-<details>
-  <summary><b>6. What is the "Zero-Budget" Intelligence model?</b></summary>
-  
-  Altus v3.0.32 is tuned to use **Google Gemini 2.5 Flash**. This model is 100% free on Google AI Studio, supports Native Vision (solving images), and has a 1-million-token context window. You get GPT-4 level intelligence at $0 cost.
+  <summary><b>4. Is Altus AI undetectable?</b></summary>
+  **Yes.** It identifies as <code>WinDiagnostic_Accessibility_Service.exe</code>, mimicking a vital Windows system driver.
 </details>
 
 ---
