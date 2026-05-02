@@ -88,7 +88,7 @@ async function performVisionSolve(customText?: string) {
 
   try {
     let keys = settings.getKeys();
-    if (keys.length === 0 && process.env.OPENROUTER_KEY) keys = [process.env.OPENROUTER_KEY];
+    if (keys.length === 0 && process.env.GOOGLE_GEMINI_KEY) keys = [process.env.GOOGLE_GEMINI_KEY];
     
     if (keys.length === 0) {
       mainWindow.webContents.send('ai-error', 'CRITICAL: No API Keys in Vault.');
@@ -145,7 +145,7 @@ app.whenReady().then(() => {
 ipcMain.on('window-close', () => app.quit());
 ipcMain.on('abort-solve', () => { isSolving = false; aiService?.abort(); });
 ipcMain.handle('get-settings', () => ({
-  openrouter: settings.getKeys().join(', ') || process.env.OPENROUTER_KEY || '',
+  openrouter: settings.getKeys().join(', ') || process.env.GOOGLE_GEMINI_KEY || '',
   globalOpacity: 0.85
 }));
 ipcMain.on('save-keys', (event, { openrouter }) => {
