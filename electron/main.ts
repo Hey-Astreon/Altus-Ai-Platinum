@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut, Tray, Menu, ipcMain, screen } from 'electron';
+import { app, BrowserWindow, globalShortcut, Tray, Menu, ipcMain, screen, desktopCapturer } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
 import * as dotenv from 'dotenv';
@@ -37,7 +37,11 @@ function createWindow() {
     alwaysOnTop: true, 
     skipTaskbar: true, 
     show: false,
-    type: 'toolbar', // System-level toolbar behavior
+    movable: true,
+    resizable: false,
+    minimizable: false, // ABSOLUTE IMMUNITY: Cannot be minimized by MSB
+    focusable: true,
+    type: 'toolbar', 
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false, 
@@ -47,8 +51,11 @@ function createWindow() {
 
   mainWindow.setContentProtection(true);
 
-  // DESKTOP MIGRATION: Ensure window exists on virtual desktops/exam shells
-  mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  // DESKTOP MIGRATION: Stay visible on all virtual desktops and full-screen shells
+  mainWindow.setVisibleOnAllWorkspaces(true, { 
+    visibleOnFullScreen: true,
+    skipTransformProcessType: true 
+  });
 
   const startUrl = isDev ? 'http://localhost:5173' : path.join(__dirname, '../dist/index.html');
   if (isDev) mainWindow.loadURL(startUrl); else mainWindow.loadFile(startUrl);
@@ -57,7 +64,7 @@ function createWindow() {
     mainWindow?.center();
     mainWindow?.setOpacity(1.0);
     mainWindow?.show();
-    startDominanceLoop(); // Start immediately for maximum sovereignty
+    startDominanceLoop(); 
   });
 }
 
@@ -65,10 +72,12 @@ function startDominanceLoop() {
   if (dominanceInterval) return;
   dominanceInterval = setInterval(() => {
     if (mainWindow && !mainWindow.isDestroyed()) {
-      // MAXIMUM SOVEREIGNTY: Punch through Desktop Switches and Kiosks
-      mainWindow.setAlwaysOnTop(true, 'screen-saver', 99); // Max priority
-      mainWindow.showInactive(); // Force visibility without stealing focus
-      mainWindow.moveTop(); // Bring to the absolute front of the Z-stack
+      // SOVEREIGN ASCENSION: Force visibility and Z-Order every 2 seconds
+      mainWindow.setAlwaysOnTop(true, 'screen-saver', 99);
+      if (!mainWindow.isVisible()) {
+        mainWindow.showInactive();
+      }
+      mainWindow.moveTop();
     }
   }, 2000);
 }
