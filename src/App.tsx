@@ -1,16 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Mic, 
   Eye, 
   Trash2, 
   Settings, 
   Shield, 
-  Activity, 
-  MessageSquare,
   ChevronRight,
   X,
   Zap,
-  Sliders
+  Move
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
@@ -19,7 +16,6 @@ const getApi = () => (window as any).api;
 
 const App: React.FC = () => {
   const [isReady, setIsReady] = useState(false);
-  const [transcript, setTranscript] = useState<string[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [isThinking, setIsThinking] = useState(false);
@@ -88,7 +84,6 @@ const App: React.FC = () => {
   const handleCapture = () => {
     const api = getApi();
     if (isThinking) {
-      // CANCEL LOGIC
       api.send('abort-solve');
       setIsThinking(false);
       return;
@@ -100,7 +95,7 @@ const App: React.FC = () => {
   const handleToggleAutoVision = () => {
     const newState = !autoVision;
     setAutoVision(newState);
-    if (!newState) getApi().send('abort-solve'); // Stop any active solve when turning off zap
+    if (!newState) getApi().send('abort-solve');
     getApi().send('toggle-auto-vision', newState);
   };
 
@@ -131,32 +126,47 @@ const App: React.FC = () => {
 
   const handleClose = () => getApi().send('window-close');
 
+  // HOLOGRAM LOGIC
   const onRibbonEnter = () => {
     const api = getApi();
     if (api && api.setIgnoreMouse) api.setIgnoreMouse(false);
   };
 
   const onRibbonLeave = () => {
+    if (showSettings) return; // Keep solid if settings are open
+    const api = getApi();
+    if (api && api.setIgnoreMouse) api.setIgnoreMouse(true, { forward: true });
+  };
+
+  const onDrawerEnter = () => {
+    const api = getApi();
+    if (api && api.setIgnoreMouse) api.setIgnoreMouse(false);
+  };
+
+  const onDrawerLeave = () => {
     const api = getApi();
     if (api && api.setIgnoreMouse) api.setIgnoreMouse(true, { forward: true });
   };
 
   useEffect(() => {
-    // Initial State: Hologram Mode (Click-through)
+    // Hologram initialization
     const timer = setTimeout(() => {
       const api = getApi();
       if (api && api.setIgnoreMouse) api.setIgnoreMouse(true, { forward: true });
-    }, 1000);
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  if (!isReady) return null; // PREVENT RENDER UNTIL BRIDGE ACTIVE
+  if (!isReady) return null;
 
   return (
     <div className="app-wrapper">
       <header className="ribbon-container" onMouseEnter={onRibbonEnter} onMouseLeave={onRibbonLeave}>
         {/* LEFT POD */}
         <div className="control-pod">
+          <div className="drag-handle" title="Hold to Move Altus">
+            <Move size={14} />
+          </div>
           <button className={`control-btn ${isThinking ? 'thinking-pulse' : ''}`} onClick={handleCapture} title="Manual Solve">
             <Eye size={17} />
           </button>
@@ -190,7 +200,11 @@ const App: React.FC = () => {
 
       <main className="insight-window">
         {/* SETTINGS DRAWER */}
-        <div className={`obsidian-drawer ${showSettings ? 'open' : ''}`}>
+        <div 
+          className={`obsidian-drawer ${showSettings ? 'open' : ''}`}
+          onMouseEnter={onDrawerEnter}
+          onMouseLeave={onDrawerLeave}
+        >
            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: '20px'}}>
               <h2 style={{fontSize: '0.75rem', letterSpacing: '4px', textTransform: 'uppercase', color: 'var(--ghost-accent)', fontWeight: 900}}>Security Vault</h2>
               <button className="control-btn mini" onClick={() => setShowSettings(false)}><ChevronRight size={18}/></button>

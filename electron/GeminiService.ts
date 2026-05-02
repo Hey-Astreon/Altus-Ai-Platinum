@@ -69,15 +69,20 @@ export class GeminiService extends EventEmitter {
       }
 
     } catch (error: any) {
-      console.error('[GeminiService] Fault:', error);
+      const errMsg = error.message || 'Unknown';
+      console.error('[GeminiService] Fault:', errMsg);
       
-      // AUTO-FAILOVER: If one key or model fails, switch to the next key instantly
-      if (retryCount < this.apiKeys.length - 1) {
+      // AUTO-FAILOVER: Switch key on Rate Limit (429), Auth (401), or Payment (402)
+      const isRetryable = errMsg.includes('429') || errMsg.includes('401') || errMsg.includes('402') || errMsg.includes('quota');
+      
+      if (isRetryable && retryCount < this.apiKeys.length - 1) {
         this.currentKeyIndex = (this.currentKeyIndex + 1) % this.apiKeys.length;
+        // Wait 1 second before retry to let rate limits settle
+        await new Promise(r => setTimeout(r, 1000));
         return this.getAnswer(question, base64Image, retryCount + 1);
       }
       
-      this.emit('error', `Intelligence Link Error: ${error.message || 'Unknown'}`);
+      this.emit('error', `Intelligence Link Error: ${errMsg}`);
     } finally {
       this.isStreaming = false;
     }

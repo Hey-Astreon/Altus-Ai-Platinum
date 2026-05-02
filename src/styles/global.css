@@ -43,8 +43,29 @@ body {
   padding: 0 16px;
   height: 48px;
   flex-shrink: 0;
-  -webkit-app-region: drag;
+  -webkit-app-region: no-drag; /* DISABLE DEFAULT DRAG */
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.drag-handle {
+  -webkit-app-region: drag; /* ENABLE TARGETED DRAG */
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: var(--ghost-text-dim);
+  transition: color 0.2s;
+  margin-right: 4px;
+}
+
+.drag-handle:hover {
+  color: var(--ghost-accent);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .control-pod { display: flex; gap: 6px; align-items: center; -webkit-app-region: no-drag; }
