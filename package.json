@@ -1,6 +1,6 @@
 {
   "name": "altus-ai",
-  "version": "3.0.30",
+  "version": "3.0.31",
   "description": "Microsoft Windows Accessibility Bridge - Diagnostic Framework",
   "author": "Microsoft System Framework",
   "main": "dist-electron/main.js",

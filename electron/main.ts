@@ -131,9 +131,14 @@ app.whenReady().then(() => {
   
   // MSB DETECTION LOGIC
   stealthService.on('msb-detected', () => {
-    mainWindow?.setOpacity(0.4);
-    mainWindow?.setAlwaysOnTop(true, 'screen-saver', 1);
-    mainWindow?.setSkipTaskbar(true);
+    if (mainWindow) {
+      mainWindow.setOpacity(0.4);
+      mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+      mainWindow.setSkipTaskbar(true);
+      if (!mainWindow.isVisible()) {
+        mainWindow.show(); // AUTOMATIC GHOST-IN: No hotkey needed
+      }
+    }
   });
 
   accessibilityService.start();
