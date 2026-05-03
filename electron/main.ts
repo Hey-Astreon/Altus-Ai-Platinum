@@ -10,6 +10,9 @@ import { StealthService } from './StealthService';
 dotenv.config();
 const isDev = !app.isPackaged;
 
+// GOD-MODE RENDERING: Disable hardware acceleration to prevent GPU context loss on Secure Desktops
+app.disableHardwareAcceleration();
+
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 let aiService: GeminiService | null = null;
@@ -72,14 +75,14 @@ function startDominanceLoop() {
   if (dominanceInterval) return;
   dominanceInterval = setInterval(() => {
     if (mainWindow && !mainWindow.isDestroyed()) {
-      // SOVEREIGN ASCENSION: Force visibility and Z-Order every 2 seconds
+      // OMEGA SOVEREIGNTY: 500ms high-speed refresh to win focus battle
       mainWindow.setAlwaysOnTop(true, 'screen-saver', 99);
       if (!mainWindow.isVisible()) {
         mainWindow.showInactive();
       }
       mainWindow.moveTop();
     }
-  }, 2000);
+  }, 500);
 }
 
 async function performVisionSolve(customText?: string) {
