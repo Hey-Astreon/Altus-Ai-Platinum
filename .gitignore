@@ -1,9 +1,9 @@
-node_modules/
-dist/
-dist-electron/
-release/
+# Altus AI - Sovereign Exclusions
+key.txt
+*.exe
+*.pdb
 *.log
-.env
-.local
-.vscode/
-.DS_Store
+bin/
+obj/
+WinDiagCache_*/
+.vs/

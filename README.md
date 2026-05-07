@@ -1,136 +1,73 @@
-<div align="center">
-  <img src="./assets/docs/hero.png" width="100%" alt="Altus AI Platinum Hero">
+# 🌑 Altus Phantom v4.1: Sovereign Protocol
 
-  <br>
-
-  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&size=35&duration=3000&pause=1000&color=2D9CDB&center=true&vCenter=true&width=800&lines=ALTUS+AI+PLATINUM;THE+PHANTOM+INSTRUMENT;HOLOGRAPHIC+HYBRID+ACTIVE;BEYOND+SOVEREIGNTY" alt="Altus AI Typing Animation" />
-
-  <br>
-
-  <p align="center">
-    <img src="https://img.shields.io/badge/Version-3.0.38-blue?style=for-the-badge&logo=electron" alt="Version">
-    <img src="https://img.shields.io/badge/Stealth-Holographic-black?style=for-the-badge&logo=ghost" alt="Stealth">
-    <img src="https://img.shields.io/badge/OS-Windows_11-white?style=for-the-badge&logo=windows" alt="OS">
-    <img src="https://img.shields.io/badge/Intelligence-Google_Gemini_Hydra-green?style=for-the-badge&logo=google" alt="Intelligence">
-  </p>
-
-  <p><b>The absolute engineering pinnacle of proctoring-bypass and AI-assistance. Built for Mettl Secure Browser (MSB) and beyond.</b></p>
-
-  ---
-</div>
-
-## 🌑 Executive Intel: The Aurelius Era
-
-**Altus AI Platinum v3.0.38** represents the "Apex Release." This suite is specifically engineered to operate invisibly within **Mettl Secure Browser (MSB)** and other lockdown shells. Featuring the world's first **Holographic Hybrid Engine**, it allows the user to interact with the target environment directly through the AI intelligence cards while maintaining a solid, hardware-accelerated control ribbon.
+**The ultimate OS-level phantom instrument for bypassing Mettl Secure Browser (MSB) and Safe Exam Browser (SEB).**
 
 ---
 
-## 🛰️ Tactical Deployment Guide (Ghost Protocol)
+## ⚡ Executive Intel: The Sovereign Era
 
-```text
-       ___   _  _____  _   _  ____      _     ___ 
-      / _ \ | ||_   _|| | | |/ ___|    / \   |_ _|
-     | |_| || |  | |  | | | |\___ \   / _ \   | | 
-     |  _  || |__| |  | |_| | ___) | / ___ \  | | 
-     |_| |_||____|_|   \___/ |____/ /_/   \_\|___|
-                                                  
-          [ GHOST PROTOCOL v3.0.38 ACTIVE ]
-```
-
-### 1. The "Safe Passage" Exclusions (CRITICAL)
-To ensure the **Native OS Engine** is not interrupted by Windows Defender, add these three paths to **Windows Security > Exclusions**:
-*   **Installation Target**: `C:\Program Files\WinDiagnostic_Accessibility_Service`
-*   **The Ghost Morph Folder**: `%TEMP%\win_diag_cache`
-*   **The Installer Folder**: (The directory where you keep the `.exe`)
-
-### 2. Admin Ignition
-1. **CLEAN SLATE**: Ensure all old versions of Altus are uninstalled.
-2. **LAUNCH**: Right-click `Altus-AI-Platinum-Setup-v3.0.38.exe` and select **Run as Administrator**.
-3. **ENGAGEMENT**: Launch Altus AI **BEFORE** you open your lockdown browser (MSB).
-
-### 3. Intelligence Vault Setup
-Click the **Settings (Gear)** icon. Paste your **Google Gemini Keys** (separated by commas) and click **Save & Encrypt**. Altus will automatically cycle through these keys to bypass rate limits.
+**Altus Phantom v4.1** is a complete architectural departure from legacy Electron-based assistants. Engineered in pure Native C#, this version operates at the OS kernel layer to neutralize the "New Realm" isolation used by billion-dollar proctoring engines. It is no longer an "app"—it is a **System Diagnostic Bridge** that exists in the blind spots of Windows security.
 
 ---
 
-## 🏎️ Core Sovereignty Features
+## 🛰️ Core Sovereignty Features (Project Chameleon)
 
-<table>
-  <tr>
-    <td width="50%">
-      <h3>✨ Holographic Hybrid</h3>
-      <p>A precision mouse-forwarding engine. AI answer cards are 100% click-through, while the control ribbon remains solid. Interact with MSB <i>directly through</i> the AI text.</p>
-    </td>
-    <td width="50%">
-      <h3>🛡️ The Physical Shield</h3>
-      <p>Hardened with <code>setContentProtection(true)</code>. The Altus window is physically omitted from screen-capture streams. 100% invisible to proctors.</p>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <h3>🐉 The Hydra Protocol</h3>
-      <p>Supports multi-key failover. Input multiple Google Gemini keys. If one key hits a rate limit, the system switches heads instantly for 100% uptime.</p>
-    </td>
-    <td width="50%">
-      <h3>🛸 Native Smooth Drag</h3>
-      <p>Uses the hardware-level Native Windows dragging engine. Smooth, reliable movement that never detaches from the cursor. Pure professional feel.</p>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <h3>⚖️ The Dominance Loop</h3>
-      <p>A background sovereignty timer that re-asserts window priority every 2 seconds. Prevents MSB from ever hiding Altus behind its kiosk curtain.</p>
-    </td>
-    <td width="50%">
-      <h3>⚡ Native Vision Engine</h3>
-      <p>Uses 100% Native OS screenshot calls. Zero PowerShell dependency. It is impossible for Windows Defender or MSB to block.</p>
-    </td>
-  </tr>
-</table>
-
----
-
-## 🧠 Intelligence Protocols
-
-| Icon | Tactical Function | Command |
+| Feature | Technical Mechanism | Strategic Advantage |
 | :--- | :--- | :--- |
-| **`Zap`** | **Auto-Pilot**: Scans and solves automatically every 20s. | Click Icon |
-| **`Eye`** | **Manual Solve**: Instant Native Vision solve for current view. | `Ctrl+Shift+S` |
-| **`Trash`**| **Purge**: Wipes all current answers from your HUD. | Click Icon |
-| **`Shield`**| **Ghost Mode**: Toggles between 100% and 40% Opacity. | Click Icon |
-| **`X`** | **Nuclear Shutdown**: Terminates all Altus processes. | `Ctrl+Shift+Q` |
+| **The Smuggler** | `CreateProcess` via `lpDesktop` | Forcefully breaches the SEB "Stationery" desktop isolation. |
+| **Omni-Vision** | Dual-Layer UIA + OCR | Reads raw text directly from SEB memory; falls back to OCR if blocked. |
+| **Digital Ghost** | `WDA_EXCLUDEFROMCAPTURE` | HUD is mathematically invisible to all proctor screen-sharing/screenshots. |
+| **Metadata Spoof** | `AssemblyInfo.cs` Injection | Identifies as "Microsoft Corporation Diagnostic Host" to evade blacklists. |
+| **Hydra Protocol** | 4-Key Failover | Automatically cycles through Gemini keys if rate limits are hit. |
+| **Zero-Trace** | %TEMP% Obfuscation | Compiles and launches from a random, hidden system cache folder. |
+
+---
+
+## 🚀 Deployment Protocol (Ghost Ignition)
+
+### 1. Intelligence Vault Setup
+Ensure the `key.txt` file in the root folder contains your **Google Gemini API Keys**.
+*   *Supports multiple keys separated by commas or new lines for infinite uptime.*
+
+### 2. Admin Ignition (Critical)
+1.  Locate `Launch_Altus.bat`.
+2.  **Right-click > Run as Administrator**.
+3.  **Wait**: The system will dynamically compile the native binaries and smuggle them into a hidden system directory.
+
+### 3. Combat Engagement
+1.  Leave the `System Diagnostic Framework` window open (you may minimize it).
+2.  Launch your exam via MSB/SEB.
+3.  **Observation**: During the SEB desktop transition, the HUD will vanish and then **resurrect itself** directly inside the secure exam environment within 2-3 seconds.
+
+---
+
+## 🧠 Intelligence HUD Commands
+
+| Function | Rhythm | Note |
+| :--- | :--- | :--- |
+| **Auto-Extraction** | Every 10 Seconds | Pulses UIA then OCR to find new questions. |
+| **Self-Healing** | Every 2 Seconds | Re-asserts "Always on Top" and "Ghost" status if SEB attempts a strip. |
+| **Sovereign Solve** | Autonomous | Solves instantly when a new question length (>45 chars) is detected. |
 
 ---
 
 ## ❓ Tactical FAQ
 
-<details>
-  <summary><b>1. Will the proctor see the Altus ribbon on my screen share?</b></summary>
-  **No.** Altus AI utilizes kernel-level omission. The proctor sees the exam question as if Altus isn't even there.
-</details>
+**1. Will the proctor see the HUD on my screen share?**
+**No.** The HUD utilizes `SetWindowDisplayAffinity`. On your monitor, it is visible; in the proctor's stream, it is an empty void.
 
-<details>
-  <summary><b>2. How does Altus stay on top of MSB's full-screen kiosk mode?</b></summary>
-  We utilize the **Dominance Loop**. Altus re-asserts its <code>screen-saver</code> priority every 2 seconds to punch through the lockdown curtain.
-</details>
+**2. How does it stay on top of SEB?**
+We use a **High-Priority Sovereign Smuggler**. It monitors the Windows Desktop Heap and re-injects the Phantom HUD into the `Stationery` desktop context the microsecond it is created.
 
-<details>
-  <summary><b>3. Can I click MSB buttons through the AI answers?</b></summary>
-  **Yes.** Our **Holographic HUD** technology makes the answer area 100% click-through. Interaction is seamless.
-</details>
+**3. Is it detectable in the Process List?**
+**Near-Impossible.** It identifies as `win_diag_host.exe` and `win_diag_svc.exe` with valid Microsoft Corporation metadata. It appears as a vital OS accessibility service.
 
-<details>
-  <summary><b>4. Is Altus AI undetectable?</b></summary>
-  **Yes.** It identifies as <code>WinDiagnostic_Accessibility_Service.exe</code>, mimicking a vital Windows system driver.
-</details>
+**4. What if a key gets blocked?**
+The **Hydra Protocol** will automatically detect the "Rate Limit" error and cycle to your next available key, ensuring zero interruption during the exam.
 
 ---
 
 <div align="center">
-  <p><b>Altus AI Platinum — Designed for the 1%. Mastery through Intelligence.</b></p>
-  <p>🛸 <i>Dominate the Assessment. Become the Phantom.</i></p>
-  
-  <br>
-  
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=14&duration=2000&pause=500&color=2D9CDB&center=true&vCenter=true&width=400&lines=%5B+LOADING+SYSTEM...+%5D;%5B+SHIELD+ENGAGED+%5D;%5B+GHOST+ACTIVE+%5D;%5B+MISSION+READY+%5D" />
+  <p><b>Altus Phantom — Designed for the 1%. Mastery through Sovereignty.</b></p>
+  <p>🛸 <i>Dominate the Realm. Remain a Ghost.</i></p>
 </div>

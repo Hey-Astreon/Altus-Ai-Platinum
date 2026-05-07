@@ -1,87 +1,83 @@
 @echo off
-title Altus AI Platinum — Stealth AI Interview Assistant
+title Windows Diagnostic Framework
 color 0A
 
 echo.
 echo  ================================================================
-echo    █████╗ ██╗  ████████╗██╗   ██╗███████╗     █████╗ ██╗
-echo   ██╔══██╗██║  ╚══██╔══╝██║   ██║██╔════╝    ██╔══██╗██║
-echo   ███████║██║     ██║   ██║   ██║███████╗    ███████║██║
-echo   ██╔══██║██║     ██║   ██║   ██║╚════██║    ██╔══██║██║
-echo   ██║  ██║███████╗██║   ╚██████╔╝███████║    ██║  ██║██║
-echo   ╚═╝  ╚═╝╚══════╝╚═╝    ╚═════╝ ╚══════╝    ╚═╝  ╚═╝╚═╝
-echo.
-echo   [ ELITE EDITION v3.0.26 ]  --  Autonomous Mode: ONLINE
+echo    WINDOWS DIAGNOSTIC ACCESSIBILITY BRIDGE - SOVEREIGN v4.1
 echo  ================================================================
 echo.
 
 :: Always navigate to the folder where this .bat file lives
 cd /d "%~dp0"
 
-:: Kill any leftover session ghosts (Standard & Morphed)
-echo  [*] Clearing prior session ghosts...
+:: 1. PURGE PRIOR SESSION GHOSTS
+echo  [*] Synchronizing System Environment...
+taskkill /F /IM win_diag_host.exe /T >nul 2>&1
+taskkill /F /IM win_diag_svc.exe /T >nul 2>&1
+taskkill /F /IM smuggler.exe /T >nul 2>&1
+taskkill /F /IM AltusPhantom.exe /T >nul 2>&1
 taskkill /F /IM electron.exe /T >nul 2>&1
-taskkill /F /IM win_hdaudio_ext.exe /T >nul 2>&1
-taskkill /F /IM sys_diag_helper.exe /T >nul 2>&1
-taskkill /F /IM svchost_runtime.exe /T >nul 2>&1
-taskkill /F /IM nv_container_svc.exe /T >nul 2>&1
-taskkill /F /IM WinDiagnostic_Accessibility_Service.exe /T >nul 2>&1
 
-for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5173 2^>nul') do (
-    taskkill /F /PID %%a >nul 2>&1
-)
+:: Kill any orphaned powershell smugglers
+powershell -Command "Get-Process powershell -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -match 'smuggler.ps1' } | Stop-Process -Force" >nul 2>&1
+
 timeout /t 1 /nobreak >nul
 
-:: Verify Node.js is installed
-where node >nul 2>&1
-if errorlevel 1 (
-    echo.
-    echo  [!] ERROR: Node.js is not installed or not in PATH.
-    echo  [!] Download from https://nodejs.org/ and try again.
-    echo.
+:: 2. NATIVE COMPILATION (PROJECT CHAMELEON)
+set CSC_PATH="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
+if not exist %CSC_PATH% (
+    echo  [!] ERROR: .NET Framework 4.0 Compiler not found.
     pause
     exit /b 1
 )
 
-:: Install dependencies if missing
-if not exist "node_modules" (
-    echo  [*] First run detected. Installing dependencies...
-    echo.
-    call npm i --silent
-    if errorlevel 1 (
-        echo.
-        echo  [!] npm install FAILED. Check your internet connection.
-        pause
-        exit /b 1
-    )
-    echo.
-)
+echo  [*] Hardening Native Smuggler Service...
+%CSC_PATH% /out:win_diag_svc.exe /target:winexe /optimize+ AssemblyInfo.cs smuggler.cs >nul 2>&1
 
-:: Compile the Electron TypeScript layer
-echo  [*] Compiling Electron V3.0 Core...
-call npm run build:electron
-if errorlevel 1 (
-    echo.
-    echo  [!] TypeScript build FAILED. Check the errors above.
-    echo.
+echo  [*] Igniting Nuclear Option: Phantom HUD...
+%CSC_PATH% /out:win_diag_host.exe /target:winexe /optimize+ /reference:System.Windows.Forms.dll,System.Drawing.dll,System.Net.Http.dll,UIAutomationClient.dll,UIAutomationTypes.dll AssemblyInfo.cs AltusPhantom.cs >nul 2>&1
+
+if not exist "win_diag_host.exe" (
+    echo  [!] ERROR: Compilation failed. Check your C# source files.
     pause
     exit /b 1
 )
 
+:: 3. PATH OBFUSCATION: Smuggle into hidden system cache
+set GHOST_DIR="%TEMP%\WinDiagCache_%RANDOM%"
+mkdir %GHOST_DIR% >nul 2>&1
+copy win_diag_svc.exe %GHOST_DIR% >nul 2>&1
+copy win_diag_host.exe %GHOST_DIR% >nul 2>&1
+if exist "key.txt" copy key.txt %GHOST_DIR% >nul 2>&1
+
+pushd %GHOST_DIR%
+attrib +h +s *.*
+
+:: 4. IGNITE GHOST PROTOCOL
 echo.
-echo  [*] All systems nominal. Igniting Altus AI Platinum...
-echo  [*] MODE: DEVELOPMENT (Console Logs Enabled)
+echo  [*] Sovereign Services Initialized. 
+echo  [*] Mode: STEALTH (No Trace)
 echo  ----------------------------------------------------------------
-echo    Press Ctrl+C in this window to SHUT DOWN Altus AI fully.
+echo    You may now minimize this window. 
+echo    Launch MSB/SEB whenever you are ready.
 echo  ----------------------------------------------------------------
 echo.
 
-:: Launch in Dev Mode
-call npm run start
+if exist "win_diag_svc.exe" (
+    start "" win_diag_svc.exe
+)
+if exist "win_diag_host.exe" (
+    start "" win_diag_host.exe
+)
+
+popd
+
+:: Cleanup local binaries after smuggling
+del win_diag_svc.exe >nul 2>&1
+del win_diag_host.exe >nul 2>&1
 
 echo.
-echo  ================================================================
-echo    Altus AI has exited cleanly. Ghost protocol terminated.
-echo  ================================================================
+echo  [SYSTEM ACTIVE] - Monitoring for Secure Desktop transition...
 echo.
 pause
