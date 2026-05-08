@@ -53,6 +53,21 @@ Upon re-initialization of this workspace, the agent MUST:
 3.  **Encrypted Key-Vault**: Move from `key.txt` to a memory-only encrypted stream.
 
 ---
+
+## ⚠️ ENVIRONMENT_GOTCHAS (OPERATIONAL_WARNINGS)
+1.  **Compiler Path**: `csc.exe` is hardcoded to `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe`. If compilation fails, verify .NET 4.0 installation.
+2.  **Shell Syntax**: This environment is Win32/PowerShell. **NEVER** use `&&` for command chaining; use `;` or separate calls.
+3.  **Git Protocol**: Always verify `git status` before pushing. Ensure `key.txt` is untracked (it is currently ignored via `.gitignore`).
+4.  **UIA Dependencies**: The HUD requires `UIAutomationClient.dll` and `UIAutomationTypes.dll` references during compilation.
+
+---
+
+## 👤 COLLABORATOR_INTEL: [ASTREON]
+*   **Expectation**: High-energy, elite-level engineering output.
+*   **Communication Style**: Zero-filler. No apologies. Technical rationale only.
+*   **Vision**: Astreon is the visionary behind the "Sovereign" concept. Align all architectural decisions with the goal of "Total Dominance."
+
+---
 <footer_integrity_check>
 "Mastery through Sovereignty. The ghost is in the machine."
 </footer_integrity_check>
