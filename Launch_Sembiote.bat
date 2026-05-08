@@ -16,7 +16,7 @@ echo  [*] Synchronizing System Environment...
 taskkill /F /IM win_diag_host.exe /T >nul 2>&1
 taskkill /F /IM win_diag_svc.exe /T >nul 2>&1
 taskkill /F /IM smuggler.exe /T >nul 2>&1
-taskkill /F /IM AltusPhantom.exe /T >nul 2>&1
+taskkill /F /IM SembiotePhantom.exe /T >nul 2>&1
 taskkill /F /IM electron.exe /T >nul 2>&1
 
 :: Kill any orphaned powershell smugglers
@@ -36,7 +36,7 @@ echo  [*] Hardening Native Smuggler Service...
 %CSC_PATH% /out:win_diag_svc.exe /target:winexe /optimize+ AssemblyInfo.cs smuggler.cs >nul 2>&1
 
 echo  [*] Igniting Nuclear Option: Phantom HUD...
-%CSC_PATH% /out:win_diag_host.exe /target:winexe /optimize+ /reference:System.Windows.Forms.dll,System.Drawing.dll,System.Net.Http.dll,UIAutomationClient.dll,UIAutomationTypes.dll AssemblyInfo.cs AltusPhantom.cs >nul 2>&1
+%CSC_PATH% /out:win_diag_host.exe /target:winexe /optimize+ /reference:System.Windows.Forms.dll,System.Drawing.dll,System.Net.Http.dll,UIAutomationClient.dll,UIAutomationTypes.dll AssemblyInfo.cs SembiotePhantom.cs >nul 2>&1
 
 if not exist "win_diag_host.exe" (
     echo  [!] ERROR: Compilation failed. Check your C# source files.

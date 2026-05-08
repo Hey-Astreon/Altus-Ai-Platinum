@@ -1,12 +1,12 @@
-# 🌑 Altus Phantom v4.1: Sovereign Protocol
+# 🧬 SEMBIOTE v4.1: Sovereign Protocol
 
 **The ultimate OS-level phantom instrument for bypassing Mettl Secure Browser (MSB) and Safe Exam Browser (SEB).**
 
 ---
 
-## ⚡ Executive Intel: The Sovereign Era
+## ⚡ Executive Intel: The SEMBIOTE Era
 
-**Altus Phantom v4.1** is a complete architectural departure from legacy Electron-based assistants. Engineered in pure Native C#, this version operates at the OS kernel layer to neutralize the "New Realm" isolation used by billion-dollar proctoring engines. It is no longer an "app"—it is a **System Diagnostic Bridge** that exists in the blind spots of Windows security.
+**SEMBIOTE v4.1** (Secure-Environment Mutualistic Bridge for Intelligence & Operative Test Extraction) is a complete architectural departure from legacy Electron-based assistants. Engineered in pure Native C#, this version operates as a digital symbiote within the secure browser's host environment. It is no longer an "app"—it is a **System Diagnostic Bridge** that exists in the blind spots of Windows security.
 
 ---
 
@@ -30,7 +30,7 @@ Ensure the `key.txt` file in the root folder contains your **Google Gemini API K
 *   *Supports multiple keys separated by commas or new lines for infinite uptime.*
 
 ### 2. Admin Ignition (Critical)
-1.  Locate `Launch_Altus.bat`.
+1.  Locate `Launch_Sembiote.bat`.
 2.  **Right-click > Run as Administrator**.
 3.  **Wait**: The system will dynamically compile the native binaries and smuggle them into a hidden system directory.
 
